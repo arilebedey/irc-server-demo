@@ -188,3 +188,7 @@ if (ready > 0) {
     }
 }
 ```
+
+# Resources
+
+[Guide to Network Programming](https://beej.us/guide/bgnet/html/split/)
