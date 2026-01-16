@@ -12,7 +12,7 @@ int main(int ac, char **av) {
   try {
     signal(SIGINT, Server::signalHandler);
     signal(SIGQUIT, Server::signalHandler);
-    ser.servInit(atoi(av[1]));
+    ser.servInit(atoi(av[1]), av[2]);
   } catch (const std::exception &e) {
     // ser.closeFds();
     std::cerr << e.what() << std::endl;

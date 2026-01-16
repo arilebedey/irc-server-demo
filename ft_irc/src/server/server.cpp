@@ -4,11 +4,13 @@
 
 Server::Server() { _servSocketFd = -1; }
 
-void Server::servInit(int port) {
+void Server::servInit(int port, char *password) {
 	this->_port = port;
+	this->_password = std::string(password);
 	servSocket();
 
-	std::cout << "Server #" << _servSocketFd << " connected" << std::endl;
+	std::cout << "Server #" << _servSocketFd << " connected" << 
+	std::endl;
 	std::cout << "Waiting for clients\n";
 }
 

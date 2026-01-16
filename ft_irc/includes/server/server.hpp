@@ -12,6 +12,7 @@ private:
   int _port;
   int _servSocketFd;
   static bool _signal;
+  std::string _password;
   std::vector<Client> _clients;
   std::vector<struct pollfd> _fds;
 
@@ -19,7 +20,7 @@ public:
   Server();
   ~Server();
 
-  void servInit(int port);
+  void servInit(int port, char *password);
   void servSocket();
   void acceptNewClient();
   void receiveNewData(int fd);
