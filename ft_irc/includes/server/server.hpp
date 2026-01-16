@@ -2,6 +2,7 @@
 #include <fcntl.h>
 #include <netinet/in.h>
 #include <poll.h>
+#include <signal.h>
 #include <sys/socket.h>
 #include <unistd.h>
 #include <vector>
@@ -18,7 +19,7 @@ public:
   Server();
   ~Server();
 
-  void servInit();
+  void servInit(int port);
   void servSocket();
   void acceptNewClient();
   void receiveNewData(int fd);

@@ -4,7 +4,7 @@ SRC_DIR = src
 INC_DIR = includes
 OBJ_DIR = obj
 
-SRCS = main.cpp \
+SRCS = client/client.cpp server/server.cpp main.cpp \
 
 OBJS = $(addprefix $(OBJ_DIR)/, $(SRCS:.cpp=.o))
 DEPS = $(OBJS:.o=.d)
@@ -16,7 +16,9 @@ RM = rm -rf
 all: $(NAME)
 
 $(OBJ_DIR):
-	mkdir -p $(OBJ_DIR)
+	mkdir -p $(OBJ_DIR)/server
+	mkdir -p $(OBJ_DIR)/client
+
 
 $(NAME): $(OBJS)
 	$(CC) $(CPPFLAGS) $(OBJS) -o $(NAME)

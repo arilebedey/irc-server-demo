@@ -1,14 +1,15 @@
 #include "../../includes/server/server.hpp"
 #include <iostream>
+#include <stdlib.h>
 
-Server::Server() { _servSocketFd = -1; };
+Server::Server() { _servSocketFd = -1; }
 
-void Server::servInit() {
-  this->_port = 4444;
-  servSocket();
+void Server::servInit(int port) {
+	this->_port = port;
+	servSocket();
 
-  std::cout << "Server #" << _servSocketFd << " connected" << std::endl;
-  std::cout << "Waiting for clients\n";
+	std::cout << "Server #" << _servSocketFd << " connected" << std::endl;
+	std::cout << "Waiting for clients\n";
 }
 
 void Server::servSocket() {
@@ -33,6 +34,16 @@ void Server::servSocket() {
 /* Erasing at interator downshifts the vector, so to avoid skipping over
    element reverse interation is used
 */
+
+// TODO -> the clean exit logic need to be coded in both Destructor and signalHandler to make sure that the program exit always properly
+void Server::signalHandler(int signum)
+{
+	if (signum == SIGINT || signum == SIGQUIT)
+		exit(0);
+}
+
+Server::~Server() {}
+
 void Server::clearClients(int fd) {
   for (int i = _fds.size() - 1; i >= 0; i--) {
     if (_fds[i].fd == fd) {
