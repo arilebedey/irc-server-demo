@@ -1,14 +1,23 @@
 #include "../../includes/server/server.hpp"
 #include <iostream>
+#include <errno.h>
 #include <stdlib.h>
 
-Server::Server() { _servSocketFd = -1; }
+/*
+	Next TODO :
+	- Handle disconnection from users
+	- Handle the writing of message server -> client
+	- Creation of user instance so they have their own attribute/buffer
+	- Login using the password stored in this->_password
+*/
+
+Server::Server() :  _servSocketFd(-1), _signal(1) {}
 
 void Server::servInit(int port, char *password) {
   this->_port = port;
   this->_password = std::string(password);
-  servSocket();
   this->_signal = 1;
+  servSocket();
   servLoop();
 
   std::cout << "Server #" << _servSocketFd << " connected" << std::endl;
@@ -31,11 +40,11 @@ void Server::servLoop() {
       if (_fds[i].revents & POLLIN)
         handleRead(_fds[i].fd);
 
-      if (_fds[i].revents & POLLOUT)
-        handleWrite(_fds[i].fd);
+    //   if (_fds[i].revents & POLLOUT)
+    //     handleWrite(_fds[i].fd);
 
-      if (_fds[i].revents & (POLLERR | POLLHUP | POLLNVAL))
-        disconnectClient(_fds[i].fd);
+    //   if (_fds[i].revents & (POLLERR | POLLHUP | POLLNVAL))
+    //     disconnectClient(_fds[i].fd);
     }
   }
 }
@@ -79,17 +88,49 @@ void Server::servSocket() {
   _fds.push_back(_newPoll);
 }
 
-void Server::handleRead(int fd) {
+void Server::acceptClient() {
+  while (true) {
+    int clientFd = accept(_servSocket  clientBuffer[fd] =Fd, NULL, NULL);
+    if (clientFd == -1) {
+      if (errno == EAGAIN || errno == EWOULDBLOCK)
+        break;
+      throw(std::runtime_error("accept failed"));
+    }
+
+    struct pollfd pfd;
+    pfd.fd = clientFd;
+    pfd.events = POLLIN;
+    pfd.revents = 0;
+    _fds.push_back(pfd);
+  }
+}
+
+void Server::handleRead(int fd)
+{
+	if (fd == this->_servSocketFd)
+	{
+		acceptClient();
+		return;
+	}
+	receiveFromClient(fd);
+}
+
+
+// TODO -> switch the temporary buffer `clientBuffer` for one 
+// client directly that will be stored in the class
+void Server::receiveFromClient(int fd) {
   char buffer[512];
+  std::string clientBuffer;
   ssize_t n = recv(fd, buffer, sizeof(buffer), 0);
 
   if (n <= 0) {
-    disconnectClient(fd);
+    // disconnectClient(fd);
+	std::cerr << "Error: nothing has been read" << std::endl;
     return;
   }
 
-  clientBuffer[fd].append(buffer, n);
-  std::cout << clientBuffer[fd] << std::endl;
+  clientBuffer.append(buffer, n);
+  std::cout << clientBuffer << std::endl;
 }
 
 // TODO -> the clean exit logic need to be coded in both Destructor and

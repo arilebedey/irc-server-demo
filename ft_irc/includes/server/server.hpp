@@ -11,7 +11,7 @@ class Server {
 private:
   int _port;
   int _servSocketFd;
-  static bool _signal;
+  bool _signal;
   std::string _password;
   std::vector<Client> _clients;
   std::vector<struct pollfd> _fds;
@@ -22,8 +22,13 @@ public:
 
   void servInit(int port, char *password);
   void servSocket();
-  void acceptNewClient();
-  void receiveNewData(int fd);
+  void servLoop();
+  
+  void acceptClient();
+  void handleRead(int fd);
+  void receiveFromClient(int fd);
+  void acceptlient();
+//   void disconnectClient(int fd);
 
   static void signalHandler(int signum);
 
