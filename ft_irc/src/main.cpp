@@ -1,6 +1,16 @@
+#include "../includes/server/server.hpp"
 #include <iostream>
 
 int main() {
-  std::cout << "i serv";
-  return 0;
+  Server ser;
+  std::cout << "----- IRC SERVER -----" << std::endl;
+  try {
+    signal(SIGINT, Server::signalHandler);
+    signal(SIGQUIT, Server::signalHandler);
+    ser.servInit();
+  } catch (const std::exception &e) {
+    ser.closeFds();
+    std::cerr << e.what() << std::endl;
+  }
+  std::cout << "Server removed!" << std::endl;
 }

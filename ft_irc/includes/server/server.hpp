@@ -1,4 +1,9 @@
 #include "../client/client.hpp"
+#include <fcntl.h>
+#include <netinet/in.h>
+#include <poll.h>
+#include <sys/socket.h>
+#include <unistd.h>
 #include <vector>
 
 class Server {
@@ -10,6 +15,9 @@ private:
   std::vector<struct pollfd> _fds;
 
 public:
+  Server();
+  ~Server();
+
   void servInit();
   void servSocket();
   void acceptNewClient();
