@@ -26,7 +26,7 @@ make
 - Non-blocking TCP server (single `poll()` or equivalent)
 - Multiple clients without forking
 - Communication over IPv4 or IPv6
-- Client authentication:
+- Client registation (IRC protocol specification):
   - `PASS`
   - `NICK`
   - `USER`
@@ -49,15 +49,14 @@ make
 
 ## Important strategies
 
-- Aggregate TCP input per client into buffers until `\r\n` before parsing commands
 - Use non-blocking sockets with a single `poll()` loop
 - Maintain per-client read and write buffers
 - Never send without `poll()` signaling `POLLOUT`
-- Validate command order (`PASS` → `NICK` → `USER`)
-- Normalize and strictly parse IRC commands
+- Validate command order in IRC standard (`PASS` → `NICK` → `USER`)
+- Aggregate TCP input per client into buffers until `\r\n` before parsing commands
 - Centralize error replies (numeric responses)
 - Cleanly remove clients on disconnect or error
-- Avoid iterator invalidation when modifying client/channel lists
+- Avoid STL iterator invalidation when modifying client/channel lists (look at correct patterns)
 - Enforce channel modes at command entry points
 - Treat TCP disconnect (`recv == 0`) as immediate quit
 
@@ -80,17 +79,17 @@ make
 - Commands are processed only after full `\r\n` termination.
 - Designed to behave similarly to a real IRC server for supported features.
 
-# Technical details
+# Some technical details
 
 ## Blocking vs. non-blocking `socket`
 
 Warning! The non-blocking socket below is for demo only and does not use `poll()`, thus violating the rules.
 
-EAGAIN || EWOULDBLOCK: error code for no data is available to read right now
-O_NONBLOCK: flag that makes a file descriptor non-blocking
-F_SETFL: fcntl command to set file descriptor flags (like O_NONBLOCK)
-AF_INET: address family for IPv4
-SOCK_STREAM: socket type for TCP (connection-oriented, reliable)
+- EAGAIN || EWOULDBLOCK: error code for no data is available to read right now
+- O_NONBLOCK: flag that makes a file descriptor non-blocking
+- F_SETFL: fcntl command to set file descriptor flags (like O_NONBLOCK)
+- AF_INET: address family for IPv4
+- SOCK_STREAM: socket type for TCP (connection-oriented, reliable)
 
 ```cpp
 int fd = socket(AF_INET, SOCK_STREAM, 0);
@@ -151,18 +150,19 @@ struct pollfd {
 int poll(struct pollfd *fds, nfds_t nfds, int timeout);
 ```
 
-POLLIN: At least one byte is available to read or the peer closed the connection
-POLLOUT: There is space in the socket send buffer (kernel‑managed memory that temporarily stores data you send before it goes onto the network)
-POLLERR: A socket error occurred (must close the fd)
-POLLHUP: The peer hung up (connection closed)
-POLLNVAL: Invalid file descriptor (bug: fd closed or never valid)
+- POLLIN: At least one byte is available to read or the peer closed the connection
+- POLLOUT: There is space in the socket send buffer (kernel‑managed memory that temporarily stores data you send before it goes onto the network)
+- POLLERR: A socket error occurred (must close the fd)
+- POLLHUP: The peer hung up (connection closed)
+- POLLNVAL: Invalid file descriptor (bug: fd closed or never valid)
 
 `revents` flags are bitwise :
-POLLIN = 0001
-POLLOUT = 0010
-POLLERR = 0100
-POLLHUP = 1000
-POLLNVAL (set by kernel)
+
+- POLLIN = 0001
+- POLLOUT = 0010
+- POLLERR = 0100
+- POLLHUP = 1000
+- POLLNVAL (set by kernel)
 
 `revents = POLLIN | POLLERR` → 0101
 
