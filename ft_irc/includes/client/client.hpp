@@ -18,6 +18,7 @@ public:
   void setAddr(std::string addr) { _addr = addr; }
 
   void appendBuffer(std::string buffer, size_t len);
+  bool hasCompleteLine();
   std::string extractLine();
 };
 
