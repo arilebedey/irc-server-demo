@@ -47,11 +47,32 @@ void Server::servLoop() {
         disconnectClient(fd);
       } else if (revents & POLLIN) {
         handleRead(fd);
-      } // else if (revents & POLLOUT) {
-      //   handleWrite(fd);
-      // }
+      } else if (revents & POLLOUT) {
+        handleWrite(fd);
+      }
     }
   }
+}
+
+void Server::handleWrite(int fd) {
+  Client *client = getClientFromFd(fd);
+  if (!client) {
+    disconnectClient(fd);
+    return;
+  }
+
+  const std::string msg = client->getOutBuffer();
+  if (msg.empty())
+    return;
+
+  ssize_t n = send(fd, msg.c_str(), msg.length(), 0);
+
+  if (n == -1) {
+    disconnectClient(fd);
+    return;
+  }
+
+  client->clearOutBuffer(n);
 }
 
 Client *Server::getClientFromFd(int fd) {
@@ -148,11 +169,15 @@ void Server::receiveFromClient(int fd) {
     return;
   }
 
-  Client *client = getClientByFd(fd);
+  if (n <= -1) {
+    disconnectClient(fd);
+    return;
+  }
+  Client *client = getClientFromFd(fd);
   if (!client)
     return;
 
-  client.appendBuffer(buffer, n);
+  // client.appendBuffer(buffer, n); wasn't implemented in my branch.
 }
 
 void Server::disconnectClient(int fd) {

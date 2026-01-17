@@ -31,6 +31,7 @@ public:
 
   void acceptClient();
   void handleRead(int fd);
+  void handleWrite(int fd);
   void receiveFromClient(int fd);
   void disconnectClient(int fd);
 
