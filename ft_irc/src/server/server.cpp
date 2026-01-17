@@ -34,22 +34,32 @@ void Server::servLoop() {
     if (ready == -1)
       throw(std::runtime_error("poll failed"));
 
-    for (size_t i = 0; i < _fds.size() && ready > 0; i++) {
-      if (_fds[i].revents == 0)
+    for (int i = _fds.size() - 1; i >= 0 && ready > 0; i--) {
+      int fd = _fds[i].fd;
+      short revents = _fds[i].revents;
+
+      if (revents == 0)
         continue;
 
-      --ready;
+      ready--;
 
-      if (_fds[i].revents & POLLIN)
-        handleRead(_fds[i].fd);
-
-      //   if (_fds[i].revents & POLLOUT)
-      //     handleWrite(_fds[i].fd);
-
-      //   if (_fds[i].revents & (POLLERR | POLLHUP | POLLNVAL))
-      //     disconnectClient(_fds[i].fd);
+      if (revents & (POLLERR | POLLHUP | POLLNVAL)) {
+        disconnectClient(fd);
+      } else if (revents & POLLIN) {
+        handleRead(fd);
+      } // else if (revents & POLLOUT) {
+      //   handleWrite(fd);
+      // }
     }
   }
+}
+
+Client *Server::getClientFromFd(int fd) {
+  for (long unsigned int i = 0; i < _clients.size(); i++)
+    if (_clients[i].getFd() == fd)
+      return &(_clients[i]);
+
+  return NULL;
 }
 
 void Server::servSocket() {
@@ -133,13 +143,20 @@ void Server::receiveFromClient(int fd) {
   ssize_t n = recv(fd, buffer, sizeof(buffer), 0);
 
   if (n <= 0) {
-    // disconnectClient(fd);
-    std::cerr << "Error: nothing has been read" << std::endl;
+    disconnectClient(fd);
     return;
   }
 
   clientBuffer.append(buffer, n);
   std::cout << clientBuffer << std::endl;
+}
+
+void Server::disconnectClient(int fd) {
+  if (fd > 0) {
+    close(fd);
+    clearClients(fd);
+    std::cout << "Client #" << fd << " disconnected" << std::endl;
+  }
 }
 
 // TODO -> the clean exit logic need to be coded in both Destructor and
