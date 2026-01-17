@@ -1,17 +1,20 @@
 #include "../../includes/server/server.hpp"
-#include <iostream>
+#include "../../includes/client/client.hpp"
 #include <errno.h>
+#include <iostream>
 #include <stdlib.h>
 
 /*
-	Next TODO :
-	- Handle disconnection from users
-	- Handle the writing of message server -> client
-	- Creation of user instance so they have their own attribute/buffer
-	- Login using the password stored in this->_password
+        Next TODO :
+        - Handle disconnection from users
+        - Handle the writing of message server -> client
+        - Creation of user instance so they have their own attribute/buffer
+        - Login using the password stored in this->_password
 */
 
-Server::Server() :  _servSocketFd(-1), _signal(1) {}
+Server::Server() : _servSocketFd(-1), _signal(1) {}
+
+Server::~Server() {}
 
 void Server::servInit(int port, char *password) {
   this->_port = port;
@@ -40,18 +43,17 @@ void Server::servLoop() {
       if (_fds[i].revents & POLLIN)
         handleRead(_fds[i].fd);
 
-    //   if (_fds[i].revents & POLLOUT)
-    //     handleWrite(_fds[i].fd);
+      //   if (_fds[i].revents & POLLOUT)
+      //     handleWrite(_fds[i].fd);
 
-    //   if (_fds[i].revents & (POLLERR | POLLHUP | POLLNVAL))
-    //     disconnectClient(_fds[i].fd);
+      //   if (_fds[i].revents & (POLLERR | POLLHUP | POLLNVAL))
+      //     disconnectClient(_fds[i].fd);
     }
   }
 }
 
 void Server::servSocket() {
   struct sockaddr_in addr;
-  struct pollfd _newPoll;
   addr.sin_family = AF_INET;
   addr.sin_port = htons(this->_port);
   addr.sin_addr.s_addr = INADDR_ANY;
@@ -82,41 +84,48 @@ void Server::servSocket() {
     throw(std::runtime_error("failed to listen"));
   }
 
-  _newPoll.fd = _servSocketFd;
-  _newPoll.events = POLLIN;
-  _newPoll.revents = 0;
-  _fds.push_back(_newPoll);
+  struct pollfd servPoll;
+  servPoll.fd = _servSocketFd;
+  servPoll.events = POLLIN;
+  servPoll.revents = 0;
+  _fds.push_back(servPoll);
 }
 
 void Server::acceptClient() {
   while (true) {
-    int clientFd = accept(_servSocket  clientBuffer[fd] =Fd, NULL, NULL);
+    int clientFd = accept(this->_servSocketFd, NULL, NULL);
     if (clientFd == -1) {
       if (errno == EAGAIN || errno == EWOULDBLOCK)
         break;
       throw(std::runtime_error("accept failed"));
     }
 
+    if (fcntl(clientFd, F_SETFL, O_NONBLOCK) == -1) {
+      close(clientFd);
+      // Do something else for cleanup?
+      throw(std::runtime_error("failed to set O_NONBLOCK"));
+    }
+
     struct pollfd pfd;
     pfd.fd = clientFd;
     pfd.events = POLLIN;
     pfd.revents = 0;
+
+    Client newClient;
+
     _fds.push_back(pfd);
   }
 }
 
-void Server::handleRead(int fd)
-{
-	if (fd == this->_servSocketFd)
-	{
-		acceptClient();
-		return;
-	}
-	receiveFromClient(fd);
+void Server::handleRead(int fd) {
+  if (fd == this->_servSocketFd) {
+    acceptClient();
+    return;
+  }
+  receiveFromClient(fd);
 }
 
-
-// TODO -> switch the temporary buffer `clientBuffer` for one 
+// TODO -> switch the temporary buffer `clientBuffer` for one
 // client directly that will be stored in the class
 void Server::receiveFromClient(int fd) {
   char buffer[512];
@@ -125,7 +134,7 @@ void Server::receiveFromClient(int fd) {
 
   if (n <= 0) {
     // disconnectClient(fd);
-	std::cerr << "Error: nothing has been read" << std::endl;
+    std::cerr << "Error: nothing has been read" << std::endl;
     return;
   }
 
@@ -139,8 +148,6 @@ void Server::signalHandler(int signum) {
   if (signum == SIGINT || signum == SIGQUIT)
     exit(0);
 }
-
-Server::~Server() {}
 
 /* Erasing at interator downshifts the vector, so to avoid skipping over
    element reverse interation is used

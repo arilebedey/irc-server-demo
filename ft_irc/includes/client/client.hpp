@@ -1,3 +1,6 @@
+#ifndef CLIENT_HPP
+#define CLIENT_HPP
+
 #include <string>
 
 class Client {
@@ -12,3 +15,5 @@ public:
   void setFd(int fd) { _fd = fd; }
   void setAddr(std::string addr) { _addr = addr; }
 };
+
+#endif
