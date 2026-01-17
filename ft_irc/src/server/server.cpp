@@ -23,7 +23,7 @@ void Server::servInit(int port, char *password) {
   servSocket();
   servLoop();
 
-  std::cout << "Server #" << _servSocketFd << " connected" << std::endl;
+  std::cout << "Server fd " << _servSocketFd << " connected" << std::endl;
   std::cout << "Waiting for clients\n";
 }
 
@@ -137,29 +137,39 @@ void Server::handleRead(int fd) {
   receiveFromClient(fd);
 }
 
-// TODO -> switch the temporary buffer `clientBuffer` for one
-// client directly that will be stored in the class
 void Server::receiveFromClient(int fd) {
   char buffer[512];
   ssize_t n = recv(fd, buffer, sizeof(buffer), 0);
 
   if (n <= 0) {
+    if (n < 0 && (errno == EAGAIN || errno == EWOULDBLOCK))
+      return; // safety: rare race condition in poll(), no actual data ready
     disconnectClient(fd);
     return;
   }
 
-  Client *client = getClientByFd(fd);
-  if (!client)
+  Client *client = getClientFromFd(fd);
+  if (!client) {
+    std::cerr << "Warning: client fd " << fd << " not found" << std::endl;
+    clearClients(fd);
+    close(fd);
     return;
+  }
 
-  client.appendBuffer(buffer, n);
+  client->appendBuffer(buffer, n);
+
+  std::string line;
+  while ((line = client->extractLine()) != "") {
+    std::cout << "Command: " << line << std::endl;
+    // TODO: parseCommand(line) and handleCommand(fd, cmd)
+  }
 }
 
 void Server::disconnectClient(int fd) {
   if (fd > 0) {
     close(fd);
     clearClients(fd);
-    std::cout << "Client #" << fd << " disconnected" << std::endl;
+    std::cout << "Client fd " << fd << " disconnected" << std::endl;
   }
 }
 
