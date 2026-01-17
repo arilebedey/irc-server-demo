@@ -5,11 +5,11 @@
 #include <stdlib.h>
 
 /*
-        Next TODO :
-        - Handle disconnection from users
-        - Handle the writing of message server -> client
-        - Creation of user instance so they have their own attribute/buffer
-        - Login using the password stored in this->_password
+   TODO :
+  - Handle disconnection from users
+  - Handle the writing of message server -> client
+  - Creation of user instance so they have their own attribute/buffer
+  - Login using the password stored in this->_password
 */
 
 Server::Server() : _servSocketFd(-1), _signal(1) {}
@@ -102,7 +102,6 @@ void Server::acceptClient() {
 
     if (fcntl(clientFd, F_SETFL, O_NONBLOCK) == -1) {
       close(clientFd);
-      // Do something else for cleanup?
       throw(std::runtime_error("failed to set O_NONBLOCK"));
     }
 
@@ -110,18 +109,21 @@ void Server::acceptClient() {
     pfd.fd = clientFd;
     pfd.events = POLLIN;
     pfd.revents = 0;
+    _fds.push_back(pfd);
 
     Client newClient;
-
-    _fds.push_back(pfd);
+    newClient.setFd(clientFd);
+    _clients.push_back(newClient);
   }
 }
 
 void Server::handleRead(int fd) {
+  // If it's the server socket
   if (fd == this->_servSocketFd) {
     acceptClient();
     return;
   }
+  // If it's the client socket
   receiveFromClient(fd);
 }
 
@@ -129,7 +131,6 @@ void Server::handleRead(int fd) {
 // client directly that will be stored in the class
 void Server::receiveFromClient(int fd) {
   char buffer[512];
-  std::string clientBuffer;
   ssize_t n = recv(fd, buffer, sizeof(buffer), 0);
 
   if (n <= 0) {
@@ -138,8 +139,11 @@ void Server::receiveFromClient(int fd) {
     return;
   }
 
-  clientBuffer.append(buffer, n);
-  std::cout << clientBuffer << std::endl;
+  Client *client = getClientByFd(fd);
+  if (!client)
+    return;
+
+  client.appendBuffer(buffer, n);
 }
 
 // TODO -> the clean exit logic need to be coded in both Destructor and
