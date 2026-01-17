@@ -27,11 +27,12 @@ public:
   void servSocket();
   void servLoop();
 
+  Client *getClientFromFd(int fd);
+
   void acceptClient();
   void handleRead(int fd);
   void receiveFromClient(int fd);
-  void acceptlient();
-  //   void disconnectClient(int fd);
+  void disconnectClient(int fd);
 
   static void signalHandler(int signum);
 
