@@ -1,12 +1,13 @@
 #include "../../includes/client/client.hpp"
+#include <iostream>
 
-void Client::appendBuffer(std::string buffer, size_t len) {
-  _buffer.append(buffer, len);
+void Client::appendBuffer(const char *buffer, size_t len) {
+    _buffer.append(buffer, len);
 }
 
 bool Client::hasCompleteLine() {
-  return _buffer.find("\r\n") != std::string::npos ||
-         _buffer.find("\n") != std::string::npos;
+  return (_buffer.find("\r\n") != std::string::npos ||
+          _buffer.find("\n") != std::string::npos);
 }
 
 std::string Client::extractLine() {
@@ -27,8 +28,8 @@ std::string Client::extractLine() {
 }
 
 void Client::clearOutBuffer(size_t bytes) {
-    if (bytes >= _outBuffer.length())
-        _outBuffer.clear();
-    else
-        _outBuffer.erase(0, bytes);
+  if (bytes >= _outBuffer.length())
+    _outBuffer.clear();
+  else
+    _outBuffer.erase(0, bytes);
 }

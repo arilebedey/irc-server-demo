@@ -14,14 +14,16 @@ public:
   Client() {};
   ~Client() {};
 
-  std::string getOutBuffer() const {return _outBuffer;};
+  std::string getOutBuffer() const { return _outBuffer; };
+  std::string getInBuffer() const { return _buffer; };
+
   void clearOutBuffer(size_t bytes);
 
   int getFd() { return _fd; };
   void setFd(int fd) { _fd = fd; };
   void setAddr(std::string addr) { _addr = addr; };
 
-  void appendBuffer(std::string buffer, size_t len);
+  void appendBuffer(const char *buffer, size_t len);
   bool hasCompleteLine();
   std::string extractLine();
 };
