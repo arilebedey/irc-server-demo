@@ -3,19 +3,18 @@
 #include <stdlib.h>
 
 int main(int ac, char **av) {
-  Server ser;
+  Server server;
   std::cout << "----- IRC SERVER -----" << std::endl;
 
-	if (ac != 3)
-		return (std::cerr << "ERROR" << std::endl, 1);
+  if (ac != 3)
+    return (std::cerr << "Error: wrong number of args" << std::endl, 1);
 
   try {
-    signal(SIGINT, Server::signalHandler);
-    signal(SIGQUIT, Server::signalHandler);
-    ser.servInit(atoi(av[1]), av[2]);
+    server.servInit(atoi(av[1]), av[2]);
   } catch (const std::exception &e) {
-    // ser.closeFds();
     std::cerr << e.what() << std::endl;
+    return 1;
   }
   std::cout << "Server removed!" << std::endl;
+  return 0;
 }

@@ -1,5 +1,6 @@
 #include "../../includes/server/server.hpp"
 #include "../../includes/client/client.hpp"
+#include <csignal>
 #include <errno.h>
 #include <iostream>
 #include <stdlib.h>
@@ -14,25 +15,47 @@
 
 Server::Server() : _servSocketFd(-1), _signal(1) {}
 
-Server::~Server() {}
+Server::~Server() { cleanup(); }
+
+volatile sig_atomic_t Server::_sigReceived = 0;
+
+void Server::setupSignals() {
+  struct sigaction sig_action;
+
+  sigemptyset(&sig_action.sa_mask);
+  sig_action.sa_flags = 0;
+  sig_action.sa_handler = Server::signalHandler;
+
+  if (sigaction(SIGINT, &sig_action, NULL) == -1)
+    throw(std::runtime_error("sigaction SIGINT failed"));
+  if (sigaction(SIGQUIT, &sig_action, NULL) == -1)
+    throw(std::runtime_error("sigaction SIGQUIT failed"));
+  // NOTE: Handle SIGPIPE? See notes.md
+}
 
 void Server::servInit(int port, char *password) {
   this->_port = port;
   this->_password = std::string(password);
   this->_signal = 1;
+
+  setupSignals();
   servSocket();
-  servLoop();
 
   std::cout << "Server fd " << _servSocketFd << " connected" << std::endl;
   std::cout << "Waiting for clients\n";
+
+  servLoop();
 }
 
 void Server::servLoop() {
-  while (this->_signal) {
+  while (_sigReceived != 1) {
     int ready = poll(&_fds[0], _fds.size(), -1);
 
-    if (ready == -1)
+    if (ready == -1) {
+      if (errno == EINTR)
+        continue; // Signal interrupted poll, not error
       throw(std::runtime_error("poll failed"));
+    }
 
     for (int i = _fds.size() - 1; i >= 0 && ready > 0; i--) {
       int fd = _fds[i].fd;
@@ -52,6 +75,7 @@ void Server::servLoop() {
       }
     }
   }
+  Server::cleanup();
 }
 
 void Server::handleWrite(int fd) {
@@ -186,6 +210,27 @@ void Server::receiveFromClient(int fd) {
   }
 }
 
+void Server::signalHandler(int signum) {
+  (void)signum;
+  Server::_sigReceived = 1;
+}
+
+void Server::cleanup() {
+  // i = 0 is server socket (skip)
+  for (size_t i = 1; i < _fds.size(); i++) {
+    if (_fds[i].fd > 0)
+      close(_fds[i].fd);
+  }
+
+  if (_servSocketFd >= 0) {
+    close(_servSocketFd);
+    _servSocketFd = -1;
+  }
+
+  _fds.clear();
+  _clients.clear();
+}
+
 void Server::disconnectClient(int fd) {
   if (fd > 0) {
     close(fd);
@@ -194,16 +239,6 @@ void Server::disconnectClient(int fd) {
   }
 }
 
-// TODO -> the clean exit logic need to be coded in both Destructor and
-// signalHandler to make sure that the program exit always properly
-void Server::signalHandler(int signum) {
-  if (signum == SIGINT || signum == SIGQUIT)
-    exit(0);
-}
-
-/* Erasing at interator downshifts the vector, so to avoid skipping over
-   element reverse interation is used
-*/
 void Server::clearClients(int fd) {
   for (int i = _fds.size() - 1; i >= 0; i--) {
     if (_fds[i].fd == fd) {

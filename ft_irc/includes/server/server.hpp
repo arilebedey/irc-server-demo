@@ -2,6 +2,7 @@
 #define SERVER_HPP
 
 #include "../client/client.hpp"
+#include <csignal>
 #include <fcntl.h>
 #include <netinet/in.h>
 #include <poll.h>
@@ -18,6 +19,7 @@ private:
   std::string _password;
   std::vector<Client> _clients;
   std::vector<struct pollfd> _fds;
+  static volatile sig_atomic_t _sigReceived;
 
 public:
   Server();
@@ -27,6 +29,9 @@ public:
   void servSocket();
   void servLoop();
 
+  void setupSignals();
+  static void signalHandler(int signum);
+
   Client *getClientFromFd(int fd);
 
   void acceptClient();
@@ -35,8 +40,7 @@ public:
   void receiveFromClient(int fd);
   void disconnectClient(int fd);
 
-  static void signalHandler(int signum);
-
+  void cleanup();
   void closeFds();
   void clearClients(int fd);
 };
