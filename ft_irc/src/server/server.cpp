@@ -13,7 +13,7 @@
   - Login using the password stored in this->_password
 */
 
-Server::Server() : _servSocketFd(-1), _signal(1) {}
+Server::Server() : _servSocketFd(-1) {}
 
 Server::~Server() { cleanup(); }
 
@@ -36,7 +36,6 @@ void Server::setupSignals() {
 void Server::servInit(int port, char *password) {
   this->_port = port;
   this->_password = std::string(password);
-  this->_signal = 1;
 
   setupSignals();
   servSocket();

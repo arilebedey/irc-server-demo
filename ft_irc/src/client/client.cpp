@@ -1,7 +1,14 @@
 #include "../../includes/client/client.hpp"
+#include <iostream>
 
 void Client::appendBuffer(const char *buffer, size_t len) {
   _buffer.append(buffer, len);
+
+  if (_buffer.length() > MAX_BUFFER_SIZE) {
+    std::cerr << "Buffer overflow: message contains < 512 characters" << _fd
+              << std::endl;
+    _buffer.clear();
+  }
 }
 
 std::string Client::extractRequest() {
