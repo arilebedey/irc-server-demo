@@ -7,12 +7,16 @@ OBJ_DIR = obj
 TEST_OBJ_DIR = objt
 
 SRCS =    client/client.cpp \
+					server/server_utils.cpp \
+					server/server_handler.cpp \
 					server/server.cpp \
 					command/command.cpp \
 					command/handle_command.cpp \
 					main.cpp \
 
 TEST_SRCS = client/client.cpp \
+						server/server_utils.cpp \
+						server/server_handler.cpp \
 						server/server.cpp \
 						command/command.cpp \
 						command/handle_command.cpp \

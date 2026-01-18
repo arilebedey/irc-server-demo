@@ -1,9 +1,5 @@
 #include "../../includes/server/server.hpp"
 #include "../../includes/client/client.hpp"
-#include <csignal>
-#include <errno.h>
-#include <iostream>
-#include <stdlib.h>
 
 /*
    TODO :
@@ -77,65 +73,6 @@ void Server::servLoop() {
   Server::cleanup();
 }
 
-void Server::handleWrite(int fd) {
-  Client *client = getClientFromFd(fd);
-  if (!client) {
-    disconnectClient(fd);
-    return;
-  }
-
-  const std::string msg = client->getOutBuffer();
-  if (msg.empty())
-    return;
-
-  ssize_t n = send(fd, msg.c_str(), msg.length(), 0);
-
-  if (n == -1) {
-    disconnectClient(fd);
-    return;
-  }
-
-  client->clearOutBuffer(n);
-  if (!client->getOutBuffer().empty())
-    return;
-
-  pollfd *client_pfd = getPollFdFromFd(fd);
-  if (!client_pfd)
-    return;
-
-  client_pfd->events &= ~POLLOUT;
-}
-
-Client *Server::getClientFromFd(int fd) {
-  for (long unsigned int i = 0; i < _clients.size(); i++)
-    if (_clients[i].getFd() == fd)
-      return &(_clients[i]);
-
-  return NULL;
-}
-
-pollfd *Server::getPollFdFromFd(int fd) {
-  for (long unsigned int i = 0; i < _fds.size(); i++) {
-    if (_fds[i].fd == fd)
-      return (&_fds[i]);
-  }
-  return NULL;
-}
-
-void Server::sendMessage(Client *client, std::string message) {
-
-  if (!client)
-    return;
-
-  pollfd *client_pfd = getPollFdFromFd(client->getFd());
-
-  if (!client_pfd)
-    return;
-
-  client->addMessage(message);
-  client_pfd->events |= POLLOUT;
-}
-
 void Server::servSocket() {
   struct sockaddr_in addr;
   addr.sin_family = AF_INET;
@@ -175,121 +112,16 @@ void Server::servSocket() {
   _fds.push_back(servPoll);
 }
 
-void Server::acceptClient() {
-  while (true) {
-    int clientFd = accept(this->_servSocketFd, NULL, NULL);
-    if (clientFd == -1) {
-      if (errno == EAGAIN || errno == EWOULDBLOCK)
-        break;
-      throw(std::runtime_error("accept failed"));
-    }
+void Server::sendMessage(Client *client, std::string message) {
 
-    if (fcntl(clientFd, F_SETFL, O_NONBLOCK) == -1) {
-      close(clientFd);
-      throw(std::runtime_error("failed to set O_NONBLOCK"));
-    }
-
-    struct pollfd pfd;
-    pfd.fd = clientFd;
-    pfd.events = POLLIN;
-    pfd.revents = 0;
-    _fds.push_back(pfd);
-
-    Client newClient;
-    newClient.setFd(clientFd);
-    _clients.push_back(newClient);
-
-    std::cout << "Client fd " << clientFd << " connected" << std::endl;
-    // Get the client from the vector (not the local variable)
-    Client *client = getClientFromFd(clientFd);
-    if (client)
-      Server::sendMessage(client, "Welcome to the IRC!\r\n");
-  }
-}
-
-void Server::handleRead(int fd) {
-  // If it's the server socket
-  if (fd == this->_servSocketFd) {
-    acceptClient();
+  if (!client)
     return;
-  }
-  // If it's the client socket
-  receiveFromClient(fd);
-}
 
-void Server::receiveFromClient(int fd) {
-  char buffer[512];
-  ssize_t n = recv(fd, buffer, sizeof(buffer), 0);
+  pollfd *client_pfd = getPollFdFromFd(client->getFd());
 
-  if (n <= 0) {
-    if (n < 0 && (errno == EAGAIN || errno == EWOULDBLOCK))
-      return; // safety: rare race condition in poll(), no actual data ready
-    disconnectClient(fd);
+  if (!client_pfd)
     return;
-  }
 
-  Client *client = getClientFromFd(fd);
-  if (!client) {
-    std::cerr << "Warning: client fd " << fd << " not found" << std::endl;
-    clearClients(fd);
-    close(fd);
-    return;
-  }
-
-  client->appendBuffer(buffer, n);
-
-  std::string req;
-  while ((req = client->extractRequest()) != "") {
-    std::cout << "Client fd " << fd << ": " << req << std::endl;
-    // TODO: parseCommand(line) and handleCommand(fd, cmd)
-
-    // Broadcast the message to all clients
-    for (long unsigned int i = 0; i < _clients.size(); i++) {
-      Server::sendMessage(&_clients[i], req + "\r\n");
-    }
-  }
-}
-
-void Server::signalHandler(int signum) {
-  (void)signum;
-  Server::_sigReceived = 1;
-}
-
-void Server::cleanup() {
-  // i = 0 is server socket (skip)
-  for (size_t i = 1; i < _fds.size(); i++) {
-    if (_fds[i].fd > 0)
-      close(_fds[i].fd);
-  }
-
-  if (_servSocketFd >= 0) {
-    close(_servSocketFd);
-    _servSocketFd = -1;
-  }
-
-  _fds.clear();
-  _clients.clear();
-}
-
-void Server::disconnectClient(int fd) {
-  if (fd > 0) {
-    close(fd);
-    clearClients(fd);
-    std::cout << "Client fd " << fd << " disconnected" << std::endl;
-  }
-}
-
-void Server::clearClients(int fd) {
-  for (int i = _fds.size() - 1; i >= 0; i--) {
-    if (_fds[i].fd == fd) {
-      _fds.erase(_fds.begin() + i);
-      break;
-    }
-  }
-  for (int i = _clients.size() - 1; i >= 0; i--) {
-    if (_clients[i].getFd() == fd) {
-      _clients.erase(_clients.begin() + i);
-      break;
-    }
-  }
+  client->addMessage(message);
+  client_pfd->events |= POLLOUT;
 }
