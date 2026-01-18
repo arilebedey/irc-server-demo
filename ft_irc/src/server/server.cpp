@@ -169,6 +169,8 @@ void Server::acceptClient() {
     Client newClient;
     newClient.setFd(clientFd);
     _clients.push_back(newClient);
+
+    std::cout << "Client fd " << clientFd << " connected" << std::endl;
   }
 }
 
@@ -203,9 +205,9 @@ void Server::receiveFromClient(int fd) {
 
   client->appendBuffer(buffer, n);
 
-  std::string line;
-  while ((line = client->extractRequest()) != "") {
-    std::cout << "Command: " << line << std::endl;
+  std::string req;
+  while ((req = client->extractRequest()) != "") {
+    std::cout << "Client fd " << fd << ": " << req << std::endl;
     // TODO: parseCommand(line) and handleCommand(fd, cmd)
   }
 }
