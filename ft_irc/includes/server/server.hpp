@@ -15,7 +15,6 @@ class Server {
 private:
   int _port;
   int _servSocketFd;
-  bool _signal;
   std::string _password;
   std::vector<Client> _clients;
   std::vector<struct pollfd> _fds;
