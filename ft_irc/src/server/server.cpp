@@ -9,7 +9,7 @@
   - Login using the password stored in this->_password
 */
 
-Server::Server() : _servSocketFd(-1) {}
+Server::Server() : _servSocketFd(-1), _serverName("ft_irc") {}
 
 Server::~Server() { cleanup(); }
 

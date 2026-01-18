@@ -55,7 +55,6 @@ void Server::acceptClient() {
     _clients.push_back(newClient);
 
     std::cout << "Client fd " << clientFd << " connected" << std::endl;
-    // Get the client from the vector (not the local variable)
     Client *client = getClientFromFd(clientFd);
     if (client)
       Server::sendMessage(client, "Welcome to the IRC!\r\n");
@@ -101,14 +100,10 @@ void Server::receiveFromClient(int fd) {
   std::string req;
   while ((req = client->extractRequest()) != "") {
     std::cout << "Client fd " << fd << ": " << req << std::endl;
-    // TODO: parseCommand(line) and handleCommand(fd, cmd)
-
-    // Broadcast the message to all clients to test sendMessage()
-    // TODO : Delete this.
-    for (long unsigned int i = 0; i < _clients.size(); i++) {
-      Server::sendMessage(&_clients[i], req + "\r\n");
-    }
+    Command cmd(this, client, req);
+    // cmd.debug_print();
   }
+
 }
 
 void Server::disconnectClient(int fd) {

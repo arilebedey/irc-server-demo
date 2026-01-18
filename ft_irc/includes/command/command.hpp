@@ -3,19 +3,34 @@
 
 #include <string>
 #include <vector>
+#include <iostream>
+#include "../client/client.hpp"
+#include "../server/server.hpp"
+
+class Server;
 
 class Command {
 private:
   std::string _name;
   std::vector<std::string> _args;
   std::string _trailing;
-
+  
+  Server *_server;
+  Client *_caller;
   void parse(const std::string &req);
 
-public:
-  Command();
-  Command(const std::string &req);
-  ~Command();
+  void handle();
+
+  public:
+  Command(Server *server, Client *caller, const std::string &req);
+  ~Command() {};
+
+  void debug_print();
+
+  void cap();
+  void user();
+  void nick();
+  void pass();
 
   std::string getName() const { return _name; }
   std::vector<std::string> getArgs() const { return _args; }

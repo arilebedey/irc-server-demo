@@ -2,7 +2,11 @@
 #include <iostream>
 #include <sstream>
 
-Command::Command(const std::string &req) { parse(req); }
+Command::Command(Server *server, Client *caller, const std::string &req)
+    : _server(server), _caller(caller) {
+  parse(req);
+  handle();
+}
 
 void Command::parse(const std::string &req) {
   if (req.find("\n") != std::string::npos) {
@@ -30,6 +34,29 @@ void Command::parse(const std::string &req) {
     while (iss >> token) // no trailing, just args
       _args.push_back(token);
   }
+}
+
+void Command::handle() {
+  if (_name == "PASS")
+    pass();
+  else if (_name == "CAP")
+    cap();
+  else if (_name == "USER")
+    user();
+  else if (_name == "NICK")
+    nick();
+}
+
+void Command::debug_print() {
+  std::cout << "=== DEBUG ===" << "\n";
+  std::cout << "Command -> " << this->_name << "\n";
+  std::cout << "Arguments ->";
+  for (unsigned long int i = 0; i < _args.size(); i++) {
+    std::cout << " " << _args[i];
+  }
+  std::cout << "\n";
+  std::cout << "Trailings ->" << this->_trailing << "\n";
+  std::cout << "==== END ====" << std::endl;
 }
 
 // Test for

@@ -2,6 +2,7 @@
 #define SERVER_HPP
 
 #include "../client/client.hpp"
+#include "../command/command.hpp"
 #include <csignal>
 #include <errno.h>
 #include <fcntl.h>
@@ -22,6 +23,7 @@ private:
   std::vector<Client> _clients;
   std::vector<struct pollfd> _fds;
   static volatile sig_atomic_t _sigReceived;
+  std::string _serverName;
 
 public:
   // server.cpp
@@ -32,7 +34,9 @@ public:
   void sendMessage(Client *client, std::string message);
   void servSocket();
   void servLoop();
-
+  // Simple Getter
+  std::string getPassword() const { return _password; };
+  std::string getName() const { return _serverName; };
   // server_utils.cpp
   Client *getClientFromFd(int fd);
   pollfd *getPollFdFromFd(int fd);
