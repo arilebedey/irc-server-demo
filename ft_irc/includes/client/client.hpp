@@ -19,6 +19,7 @@ public:
 
   void clearOutBuffer(size_t bytes);
 
+  void addMessage(std::string message);
   int getFd() { return _fd; };
   void setFd(int fd) { _fd = fd; };
   void setAddr(std::string addr) { _addr = addr; };

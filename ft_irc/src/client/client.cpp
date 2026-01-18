@@ -22,3 +22,5 @@ void Client::clearOutBuffer(size_t bytes) {
   else
     _outBuffer.erase(0, bytes);
 }
+
+void Client::addMessage(std::string message) { _outBuffer += message; }

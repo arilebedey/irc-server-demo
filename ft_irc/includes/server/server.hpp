@@ -34,6 +34,10 @@ public:
 
   Client *getClientFromFd(int fd);
 
+  pollfd *getPollFdFromFd(int fd);
+
+  void  sendMessage(Client *client, std::string message);
+
   void acceptClient();
   void handleRead(int fd);
   void handleWrite(int fd);

@@ -97,6 +97,14 @@ void Server::handleWrite(int fd) {
   }
 
   client->clearOutBuffer(n);
+  if (!client->getOutBuffer().empty())
+    return;
+
+  pollfd *client_pfd = getPollFdFromFd(fd);
+  if (!client_pfd)
+    return;
+
+  client_pfd->events &= ~POLLOUT;
 }
 
 Client *Server::getClientFromFd(int fd) {
@@ -105,6 +113,28 @@ Client *Server::getClientFromFd(int fd) {
       return &(_clients[i]);
 
   return NULL;
+}
+
+pollfd *Server::getPollFdFromFd(int fd) {
+  for (long unsigned int i = 0; i < _fds.size(); i++) {
+    if (_fds[i].fd == fd)
+      return (&_fds[i]);
+  }
+  return NULL;
+}
+
+void Server::sendMessage(Client *client, std::string message) {
+
+  if (!client)
+    return;
+
+  pollfd *client_pfd = getPollFdFromFd(client->getFd());
+
+  if (!client_pfd)
+    return;
+
+  client->addMessage(message);
+  client_pfd->events |= POLLOUT;
 }
 
 void Server::servSocket() {
@@ -171,6 +201,10 @@ void Server::acceptClient() {
     _clients.push_back(newClient);
 
     std::cout << "Client fd " << clientFd << " connected" << std::endl;
+    // Get the client from the vector (not the local variable)
+    Client *client = getClientFromFd(clientFd);
+    if (client)
+      Server::sendMessage(client, "Welcome to the IRC!\r\n");
   }
 }
 
@@ -209,6 +243,11 @@ void Server::receiveFromClient(int fd) {
   while ((req = client->extractRequest()) != "") {
     std::cout << "Client fd " << fd << ": " << req << std::endl;
     // TODO: parseCommand(line) and handleCommand(fd, cmd)
+
+    // Broadcast the message to all clients
+    for (long unsigned int i = 0; i < _clients.size(); i++) {
+      Server::sendMessage(&_clients[i], req + "\r\n");
+    }
   }
 }
 
