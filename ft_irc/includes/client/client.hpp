@@ -25,7 +25,7 @@ public:
 
   void appendBuffer(const char *buffer, size_t len);
   bool hasCompleteLine();
-  std::string extractLine();
+  std::string extractRequest();
 };
 
 #endif

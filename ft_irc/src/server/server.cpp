@@ -180,7 +180,7 @@ void Server::receiveFromClient(int fd) {
   client->appendBuffer(buffer, n);
 
   std::string line;
-  while ((line = client->extractLine()) != "") {
+  while ((line = client->extractRequest()) != "") {
     std::cout << "Command: " << line << std::endl;
     // TODO: parseCommand(line) and handleCommand(fd, cmd)
   }

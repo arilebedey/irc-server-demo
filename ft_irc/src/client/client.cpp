@@ -2,7 +2,7 @@
 #include <iostream>
 
 void Client::appendBuffer(const char *buffer, size_t len) {
-    _buffer.append(buffer, len);
+  _buffer.append(buffer, len);
 }
 
 bool Client::hasCompleteLine() {
@@ -10,21 +10,16 @@ bool Client::hasCompleteLine() {
           _buffer.find("\n") != std::string::npos);
 }
 
-std::string Client::extractLine() {
+std::string Client::extractRequest() {
   size_t pos = _buffer.find("\r\n");
-  size_t erase_len = 2;
 
-  if (pos == std::string::npos) {
-    pos = _buffer.find("\n");
-    erase_len = 1;
-  }
   if (pos == std::string::npos)
     return "";
 
-  std::string line = _buffer.substr(0, pos);
-  _buffer.erase(0, pos + erase_len);
+  std::string req = _buffer.substr(0, pos);
+  _buffer.erase(0, pos + 2);
 
-  return line;
+  return req;
 }
 
 void Client::clearOutBuffer(size_t bytes) {
