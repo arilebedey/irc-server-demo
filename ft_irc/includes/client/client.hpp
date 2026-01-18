@@ -9,6 +9,7 @@ private:
   std::string _addr;
   std::string _buffer;
   std::string _outBuffer;
+  const size_t MAX_BUFFER_SIZE = 512;
 
 public:
   Client() {};
