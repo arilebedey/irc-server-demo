@@ -2,7 +2,9 @@
 #include <iostream>
 #include <sstream>
 
-void Command::parse(std::string &req) {
+Command::Command(const std::string &req) { parse(req); }
+
+void Command::parse(const std::string &req) {
   if (req.find("\n") != std::string::npos) {
     std::cerr << "Invalid character in command: newline" << std::endl;
     _name = "";
