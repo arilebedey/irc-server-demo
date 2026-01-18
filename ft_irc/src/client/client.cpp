@@ -5,11 +5,6 @@ void Client::appendBuffer(const char *buffer, size_t len) {
   _buffer.append(buffer, len);
 }
 
-bool Client::hasCompleteLine() {
-  return (_buffer.find("\r\n") != std::string::npos ||
-          _buffer.find("\n") != std::string::npos);
-}
-
 std::string Client::extractRequest() {
   size_t pos = _buffer.find("\r\n");
 
