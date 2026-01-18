@@ -1,5 +1,4 @@
 #include "../../includes/client/client.hpp"
-#include <iostream>
 
 void Client::appendBuffer(const char *buffer, size_t len) {
   _buffer.append(buffer, len);
