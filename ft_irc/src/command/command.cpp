@@ -2,6 +2,10 @@
 #include <iostream>
 #include <sstream>
 
+Command::Command() {}
+
+Command::~Command() {}
+
 Command::Command(const std::string &req) { parse(req); }
 
 void Command::parse(const std::string &req) {
@@ -15,7 +19,6 @@ void Command::parse(const std::string &req) {
   std::istringstream iss(req);
 
   if (!(iss >> token) || token.empty()) {
-    std::cerr << "Error: client sent empty message" << std::endl;
     return;
   }
 
@@ -31,8 +34,3 @@ void Command::parse(const std::string &req) {
       _args.push_back(token);
   }
 }
-
-// Test for
-//
-// KICK #channel user1 :
-// PRIVMSG #channel:hello world
