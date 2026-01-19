@@ -103,7 +103,6 @@ void Server::receiveFromClient(int fd) {
     Command cmd(this, client, req);
     // cmd.debug_print();
   }
-
 }
 
 void Server::disconnectClient(int fd) {

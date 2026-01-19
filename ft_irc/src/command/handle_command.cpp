@@ -52,5 +52,4 @@ void Command::nick() {
 
 void Command::user() {
   // TODO: implement proper logic
-  
 }

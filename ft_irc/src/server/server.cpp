@@ -113,7 +113,6 @@ void Server::servSocket() {
 }
 
 void Server::sendMessage(Client *client, std::string message) {
-
   if (!client)
     return;
 
