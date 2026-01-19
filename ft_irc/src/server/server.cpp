@@ -125,3 +125,4 @@ void Server::sendMessage(Client *client, std::string message) {
   client->addMessage(message);
   client_pfd->events |= POLLOUT;
 }
+

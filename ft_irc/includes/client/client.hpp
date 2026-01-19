@@ -26,7 +26,7 @@ public:
   void setAddr(std::string addr) { _addr = addr; };
 
   void appendBuffer(const char *buffer, size_t len);
-  std::string extractRequest();
+  std::string extractLine();
 };
 
 #endif

@@ -58,7 +58,7 @@ void Server::acceptClient() {
     // Get the client from the vector (not the local variable)
     Client *client = getClientFromFd(clientFd);
     if (client)
-      Server::sendMessage(client, "Welcome to the IRC!\r\n");
+      Server::sendMessage(client, "Welcome to the ft_irc server!\r\n");
   }
 }
 
@@ -88,6 +88,8 @@ void Server::receiveFromClient(int fd) {
     return;
   }
 
+  std::cout << "receiveFromClient n : " << n << std::endl;
+
   Client *client = getClientFromFd(fd);
   if (!client) {
     std::cerr << "Warning: client fd " << fd << " not found" << std::endl;
@@ -99,14 +101,20 @@ void Server::receiveFromClient(int fd) {
   client->appendBuffer(buffer, n);
 
   std::string req;
-  while ((req = client->extractRequest()) != "") {
+  while ((req = client->extractLine()) != "") {
+    if (req == "ERROR") {
+      std::cout << "Client fd " << fd << " sent erroneous request" << std::endl;
+      disconnectClient(fd);
+      return;
+    }
     std::cout << "Client fd " << fd << ": " << req << std::endl;
     // TODO: parseCommand(line) and handleCommand(fd, cmd)
 
     // Broadcast the message to all clients to test sendMessage()
     // TODO : Delete this.
     for (long unsigned int i = 0; i < _clients.size(); i++) {
-      Server::sendMessage(&_clients[i], req + "\r\n");
+      if (_clients[i].getFd() != fd)
+        Server::sendMessage(&_clients[i], req + "\r\n");
     }
   }
 }

@@ -10,7 +10,7 @@ Client *Server::getClientFromFd(int fd) {
 }
 
 pollfd *Server::getPollFdFromFd(int fd) {
-  for (long unsigned int i = 0; i < _fds.size(); i++) {
+  for (long unsigned int i = 1; i < _fds.size(); i++) {
     if (_fds[i].fd == fd)
       return (&_fds[i]);
   }
