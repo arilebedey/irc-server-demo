@@ -3,6 +3,8 @@
 
 void Command::cap() { _server->sendMessage(_caller, "CAP * LS :\r\n"); }
 
+void Command::join() {}
+
 void Command::pass() {
   if (_caller->getIsRegistered()) {
     _server->sendMessage(_caller, ":" + _server->getName() + " 462 " +

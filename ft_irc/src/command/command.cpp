@@ -19,7 +19,6 @@ void Command::parse(const std::string &req) {
   std::istringstream iss(req);
 
   if (!(iss >> token) || token.empty()) {
-    std::cerr << "Error: client sent empty message" << std::endl;
     return;
   }
 

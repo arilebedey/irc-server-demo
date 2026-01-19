@@ -57,7 +57,7 @@ void Server::acceptClient() {
     std::cout << "Client fd " << clientFd << " connected" << std::endl;
     Client *client = getClientFromFd(clientFd);
     if (client)
-      Server::sendMessage(client, "Welcome to the IRC!\r\n");
+      Server::sendMessage(client, "Welcome to the ft_irc server!\r\n");
   }
 }
 
@@ -87,6 +87,8 @@ void Server::receiveFromClient(int fd) {
     return;
   }
 
+  std::cout << "receiveFromClient n : " << n << std::endl;
+
   Client *client = getClientFromFd(fd);
   if (!client) {
     std::cerr << "Warning: client fd " << fd << " not found" << std::endl;
@@ -98,7 +100,12 @@ void Server::receiveFromClient(int fd) {
   client->appendBuffer(buffer, n);
 
   std::string req;
-  while ((req = client->extractRequest()) != "") {
+  while ((req = client->extractLine()) != "") {
+    if (req == "ERROR") {
+      std::cout << "Client fd " << fd << " sent erroneous request" << std::endl;
+      disconnectClient(fd);
+      return;
+    }
     std::cout << "Client fd " << fd << ": " << req << std::endl;
     Command cmd(this, client, req);
     // cmd.debug_print();

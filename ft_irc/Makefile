@@ -12,6 +12,7 @@ SRCS =    client/client.cpp \
 					server/server.cpp \
 					command/command.cpp \
 					command/handle_command.cpp \
+					channel/channel.cpp \
 					main.cpp \
 
 TEST_SRCS = client/client.cpp \
@@ -20,6 +21,7 @@ TEST_SRCS = client/client.cpp \
 						server/server.cpp \
 						command/command.cpp \
 						command/handle_command.cpp \
+						channel/channel.cpp \
 						test_main.cpp \
 
 OBJS = $(addprefix $(OBJ_DIR)/, $(SRCS:.cpp=.o))
@@ -38,12 +40,13 @@ $(OBJ_DIR):
 	mkdir -p $(OBJ_DIR)/server
 	mkdir -p $(OBJ_DIR)/client
 	mkdir -p $(OBJ_DIR)/command
-	mkdir -p $(OBJ_DIR)/tests
+	mkdir -p $(OBJ_DIR)/channel
 
 $(TEST_OBJ_DIR):
 	mkdir -p $(TEST_OBJ_DIR)/server
 	mkdir -p $(TEST_OBJ_DIR)/client
 	mkdir -p $(TEST_OBJ_DIR)/command
+	mkdir -p $(TEST_OBJ_DIR)/channel
 	mkdir -p $(TEST_OBJ_DIR)/tests
 
 # Targets
