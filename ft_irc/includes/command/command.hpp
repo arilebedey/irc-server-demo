@@ -1,11 +1,11 @@
 #ifndef COMMAND_HPP
 #define COMMAND_HPP
 
-#include <string>
-#include <vector>
-#include <iostream>
 #include "../client/client.hpp"
 #include "../server/server.hpp"
+#include <iostream>
+#include <string>
+#include <vector>
 
 class Server;
 
@@ -14,16 +14,26 @@ private:
   std::string _name;
   std::vector<std::string> _args;
   std::string _trailing;
-  
+
   Server *_server;
   Client *_caller;
   void parse(const std::string &req);
 
   void handle();
 
+  // Error messages.
+  std::string errAlreadyRegistered();
+
+  std::string errNeedMoreParams();
+  std::string errPasswdMismatch();
+  std::string errNoNicknameGiven();
+  std::string errErroneusNickname(std::string nick);
+  std::string errNicknameInUse(std::string nick);
+  std::string infoSuccesConnexion();
+
   public:
   Command(Server *server, Client *caller, const std::string &req);
-  ~Command() {};
+  ~Command(){};
 
   void debug_print();
 

@@ -36,9 +36,11 @@ void Command::parse(const std::string &req) {
 }
 
 void Command::handle() {
-  if (_name == "PASS")
+  std::cout << "Trying to handle the command : \"" + _name + "\"." << std::endl;
+  if (_name == "PASS") {
+    std::cout << "Is was in fact a pass request." << std::endl;
     pass();
-  else if (_name == "CAP")
+  } else if (_name == "CAP")
     cap();
   else if (_name == "USER")
     user();
@@ -47,7 +49,8 @@ void Command::handle() {
 }
 
 void Command::debug_print() {
-  std::cout << "=== DEBUG ===" << "\n";
+  std::cout << "=== DEBUG ==="
+            << "\n";
   std::cout << "Command -> " << this->_name << "\n";
   std::cout << "Arguments ->";
   for (unsigned long int i = 0; i < _args.size(); i++) {

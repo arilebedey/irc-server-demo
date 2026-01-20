@@ -13,7 +13,8 @@ void Server::handleWrite(int fd) {
     return;
 
   ssize_t n = send(fd, msg.c_str(), msg.length(), 0);
-
+  std::cout << "[SENDing to " << fd << "]: " << msg << std::endl;
+  
   if (n == -1) {
     disconnectClient(fd);
     return;
@@ -55,9 +56,6 @@ void Server::acceptClient() {
     _clients.push_back(newClient);
 
     std::cout << "Client fd " << clientFd << " connected" << std::endl;
-    Client *client = getClientFromFd(clientFd);
-    if (client)
-      Server::sendMessage(client, "Welcome to the ft_irc server!\r\n");
   }
 }
 
@@ -86,8 +84,6 @@ void Server::receiveFromClient(int fd) {
     disconnectClient(fd);
     return;
   }
-
-  std::cout << "receiveFromClient n : " << n << std::endl;
 
   Client *client = getClientFromFd(fd);
   if (!client) {

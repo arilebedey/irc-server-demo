@@ -14,10 +14,11 @@ private:
   bool _loggedIn;
   std::string _nick;
   std::string _user;
+  std::string _real;
 
 public:
-  Client() : _loggedIn(false) {};
-  ~Client() {};
+  Client() : _loggedIn(false){};
+  ~Client(){};
 
   std::string getOutBuffer() const { return _outBuffer; };
   std::string getInBuffer() const { return _buffer; };
@@ -28,6 +29,7 @@ public:
   int getFd() { return _fd; };
   bool getLoggedIn() { return _loggedIn; };
   std::string getNick() { return _nick; };
+  std::string getReal() { return _real; };
   std::string getUser() { return _user; };
   bool getIsRegistered() {
     return _loggedIn && !_nick.empty() && !_user.empty();
@@ -37,6 +39,7 @@ public:
   void setFd(int fd) { _fd = fd; };
   void setNick(std::string nick) { _nick = nick; };
   void setUser(std::string user) { _user = user; };
+  void setReal(std::string real) { _real = real; };
   void setAddr(std::string addr) { _addr = addr; };
 
   void appendBuffer(const char *buffer, size_t len);
