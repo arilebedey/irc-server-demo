@@ -1,6 +1,6 @@
 # Overview
 
-Minimal IRC server implementation in **C++98** for the 42 School `ft_irc` project.
+IRC server implementation in **C++98** for the 42 School `ft_irc` project.
 
 This project implements a standalone IRC server compatible with a standard IRC client.
 It supports multiple simultaneous clients using non-blocking I/O and a single polling
