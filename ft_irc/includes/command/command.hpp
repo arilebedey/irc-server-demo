@@ -31,9 +31,16 @@ private:
   std::string errNicknameInUse(std::string nick);
   std::string infoSuccesConnexion();
 
-  public:
+  std::string errBadChannelMask(std::string name);
+  std::string errChanOpPrivsNeeded(std::string channel);
+  std::string errBadChannelKey(std::string channel);
+  std::string errInviteOnlyChan(std::string channel);
+  std::string errChannelIsFull(std::string channel);
+  std::string errKeySet(std::string channel);
+
+public:
   Command(Server *server, Client *caller, const std::string &req);
-  ~Command(){};
+  ~Command() {};
 
   void debug_print();
 

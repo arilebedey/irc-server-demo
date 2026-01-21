@@ -36,8 +36,43 @@ std::string Command::errNicknameInUse(std::string nick) {
 
 // RPL_WELCODE(001)
 std::string Command::infoSuccesConnexion() {
-        return ":" + _server->getName() + " 001 " + _caller->getNick() +
-                       " :Welcome to the Internet Relay Network " +
-                       _caller->getNick() + "!" + _caller->getUser() +
-                       "@127.0.0.1";
+  return ":" + _server->getName() + " 001 " + _caller->getNick() +
+         " :Welcome to the Internet Relay Network " + _caller->getNick() + "!" +
+         _caller->getUser() + "@127.0.0.1";
+}
+
+// 476 ERR_BADCHANMASK
+std::string Command::errBadChannelMask(std::string name) {
+  return ":" + _server->getName() + " 476 " + _caller->getNick() + " " + name +
+         " :Bad channel mask\r\n";
+}
+
+// 467 ERR_KEYSET
+std::string Command::errKeySet(std::string channel) {
+  return ":" + _server->getName() + " 467 " + _caller->getNick() + " #" +
+         channel + " :Channel key already set\r\n";
+}
+
+// 471 ERR_CHANNELISFULL
+std::string Command::errChannelIsFull(std::string channel) {
+  return ":" + _server->getName() + " 471 " + _caller->getNick() + " #" +
+         channel + " :Cannot join channel (+l)\r\n";
+}
+
+// 473 ERR_INVITEONLYCHAN
+std::string Command::errInviteOnlyChan(std::string channel) {
+  return ":" + _server->getName() + " 473 " + _caller->getNick() + " #" +
+         channel + " :Cannot join channel (+i)\r\n";
+}
+
+// 475 ERR_BADCHANNELKEY
+std::string Command::errBadChannelKey(std::string channel) {
+  return ":" + _server->getName() + " 475 " + _caller->getNick() + " #" +
+         channel + " :Cannot join channel (+k)\r\n";
+}
+
+// 482 ERR_CHANOPRIVSNEEDED
+std::string Command::errChanOpPrivsNeeded(std::string channel) {
+  return ":" + _server->getName() + " 482 " + _caller->getNick() + " #" +
+         channel + " :You're not channel operator\r\n";
 }
