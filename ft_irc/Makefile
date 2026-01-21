@@ -14,6 +14,7 @@ SRCS =    client/client.cpp \
 					command/command.cpp \
 					command/handle_command.cpp \
 					command/error_command.cpp \
+					command/utils_command.cpp \
 					channel/channel.cpp \
 					main.cpp \
 

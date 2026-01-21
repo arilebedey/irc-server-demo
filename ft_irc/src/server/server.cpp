@@ -121,6 +121,26 @@ void Server::sendMessage(Client *client, std::string message) {
   if (!client_pfd)
     return;
 
+  if (message.empty())
+    return;
+
+  if (client->getOutBuffer().empty()) {
+    ssize_t sent_bytes =
+        send(client->getFd(), message.c_str(), message.length(), 0);
+    if (sent_bytes == -1) {
+      // Error during send, buffer the whole message
+      client->addMessage(message);
+      client_pfd->events |= POLLOUT;
+      return;
+    } else if (static_cast<size_t>(sent_bytes) < message.length()) {
+      // Partial send, buffer the remaining part
+      client->addMessage(message.substr(sent_bytes));
+      client_pfd->events |= POLLOUT;
+      return;
+    } else {
+      return;
+    }
+  }
   client->addMessage(message);
   client_pfd->events |= POLLOUT;
 }

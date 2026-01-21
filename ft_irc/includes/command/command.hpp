@@ -59,6 +59,7 @@ public:
   std::vector<std::string> getArgs() const { return _args; }
   std::string getTrailing() const { return _trailing; }
   bool isValid() const { return !_name.empty(); }
+  void welcomeUser(Client *caller);
 };
 
 #endif
