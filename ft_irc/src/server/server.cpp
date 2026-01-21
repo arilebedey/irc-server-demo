@@ -124,3 +124,17 @@ void Server::sendMessage(Client *client, std::string message) {
   client->addMessage(message);
   client_pfd->events |= POLLOUT;
 }
+
+void Server::broadcastToChannel(Channel *channel, std::string message) {
+  std::set<int> members = channel->getMembers();
+
+  for (std::set<int>::iterator it = members.begin(); it != members.end();
+       ++it) {
+    int fd = *it;
+    Client *client = getClientFromFd(fd);
+
+    if (client) {
+      sendMessage(client, message);
+    }
+  }
+}

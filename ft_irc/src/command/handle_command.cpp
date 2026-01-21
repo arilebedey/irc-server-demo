@@ -76,9 +76,8 @@ void Command::join() {
 
   std::string prefix =
       ":" + _caller->getNick() + "!" + _caller->getUser() + "@127.0.0.1";
-  std::string msg = prefix + " JOIN #" + channelName + "\r\n";
-  // TODO:
-  // _server->broadcastToChannel(channel, msg);
+  std::string message = prefix + " JOIN #" + channelName + "\r\n";
+  _server->broadcastToChannel(channel, message);
 }
 
 void Command::pass() {
@@ -186,13 +185,12 @@ void Command::part() {
   std::string prefix =
       ":" + _caller->getNick() + "!" + _caller->getUser() + "@127.0.0.1";
   std::string reason = (_args.size() > 1) ? _args[1] : "";
-  std::string msg = prefix + " PART #" + channelName;
+  std::string message = prefix + " PART #" + channelName;
   if (!reason.empty())
-    msg += " :" + reason + "\r\n";
+    message += " :" + reason + "\r\n";
   else
-    msg += "\r\n";
-  // TODO:
-  // _server->broadcastToChannel(channel, msg);
+    message += "\r\n";
+  _server->broadcastToChannel(channel, message);
   channel->removeMember(_caller->getFd());
   _server->deleteChannelIfEmpty(channelName);
 }

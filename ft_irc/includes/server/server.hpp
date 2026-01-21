@@ -54,6 +54,7 @@ public:
   Channel *getOrCreateChannel(const std::string &name);
   Channel *getChannel(const std::string &name);
   void deleteChannelIfEmpty(const std::string &name);
+  void broadcastToChannel(Channel *channel, std::string message);
 
   // server_handler.cpp
   static void signalHandler(int signum);
