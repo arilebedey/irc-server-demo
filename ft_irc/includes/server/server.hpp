@@ -44,6 +44,7 @@ public:
   std::string getName() const { return _serverName; };
   // server_utils.cpp
   Client *getClientFromFd(int fd);
+  Client *getClientFromNick(std::string nick);
   pollfd *getPollFdFromFd(int fd);
   bool isNickTaken(std::string searched);
   void cleanup();
@@ -56,6 +57,8 @@ public:
   Channel *getChannel(const std::string &name);
   void deleteChannelIfEmpty(const std::string &name);
   void broadcastToChannel(Channel *channel, std::string message);
+  void broadcastToChannel2(Channel *channel, Client *sender,
+                           std::string message);
 
   // server_handler.cpp
   static void signalHandler(int signum);

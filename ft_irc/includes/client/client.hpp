@@ -1,8 +1,8 @@
 #ifndef CLIENT_HPP
 #define CLIENT_HPP
 
-#include <string>
 #include <iostream>
+#include <string>
 
 class Client {
 private:
@@ -19,8 +19,8 @@ private:
   std::string _real;
 
 public:
-  Client() : _loggedIn(false), _welcome(false){};
-  ~Client(){};
+  Client() : _loggedIn(false), _welcome(false) {};
+  ~Client() {};
 
   std::string getOutBuffer() const { return _outBuffer; };
   std::string getInBuffer() const { return _buffer; };
@@ -34,13 +34,13 @@ public:
   std::string getNick() { return _nick; };
   std::string getReal() { return _real; };
   std::string getUser() { return _user; };
+  std::string getIdentity();
   bool getIsRegistered() {
-    std::cout << _loggedIn << " " << !_nick.empty() << " " << !_user.empty() << std::endl;
     return _loggedIn && !_nick.empty() && !_user.empty();
   };
 
   void setLoggedIn(bool status) { _loggedIn = status; };
-  void setWelcome(bool status) {_welcome = status; };
+  void setWelcome(bool status) { _welcome = status; };
   void setFd(int fd) { _fd = fd; };
   void setNick(std::string nick) { _nick = nick; };
   void setUser(std::string user) { _user = user; };

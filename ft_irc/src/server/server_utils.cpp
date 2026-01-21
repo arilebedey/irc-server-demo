@@ -10,6 +10,14 @@ Client *Server::getClientFromFd(int fd) {
   return NULL;
 }
 
+Client *Server::getClientFromNick(std::string nick) {
+  for (long unsigned int i = 0; i < _clients.size(); i++) {
+    if (_clients[i].getNick() == nick)
+      return &(_clients[i]);
+  }
+  return NULL;
+}
+
 pollfd *Server::getPollFdFromFd(int fd) {
   for (long unsigned int i = 1; i < _fds.size(); i++) {
     if (_fds[i].fd == fd)
@@ -19,11 +27,8 @@ pollfd *Server::getPollFdFromFd(int fd) {
 }
 
 bool Server::isNickTaken(std::string searched) {
-  for (long unsigned int i = 0; i < _clients.size(); i++) {
-    if (_clients[i].getNick() == searched)
-      return true;
-  }
-
+  if (getClientFromNick(searched) != NULL)
+    return true;
   return false;
 }
 

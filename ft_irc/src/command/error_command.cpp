@@ -30,15 +30,17 @@ std::string Command::errErroneusNickname(std::string nick) {
 
 // 433
 std::string Command::errNicknameInUse(std::string nick) {
-  std::string currentNick = _caller->getNick().empty() ? "*" : _caller->getNick();
-  return ":" + _server->getName() + " 433 " + currentNick + " " + nick + " :Nickname is already in use\r\n";
+  std::string currentNick =
+      _caller->getNick().empty() ? "*" : _caller->getNick();
+  return ":" + _server->getName() + " 433 " + currentNick + " " + nick +
+         " :Nickname is already in use\r\n";
 }
 
 // RPL_WELCODE(001)
 std::string Command::infoSuccesConnexion() {
   return ":" + _server->getName() + " 001 " + _caller->getNick() +
-         " :Welcome to the Internet Relay Network " + _caller->getNick() + "!" +
-         _caller->getUser() + "@127.0.0.1\r\n";
+         " :Welcome to the Internet Relay Network " + _caller->getIdentity() +
+         "\r\n";
 }
 
 // 476 ERR_BADCHANMASK

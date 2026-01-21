@@ -158,3 +158,18 @@ void Server::broadcastToChannel(Channel *channel, std::string message) {
     }
   }
 }
+
+void Server::broadcastToChannel2(Channel *channel, Client *sender,
+                                 std::string message) {
+  std::set<int> members = channel->getMembers();
+
+  for (std::set<int>::iterator it = members.begin(); it != members.end();
+       ++it) {
+    int fd = *it;
+    Client *client = getClientFromFd(fd);
+
+    if (client && client->getFd() != sender->getFd()) {
+      sendMessage(client, message);
+    }
+  }
+}

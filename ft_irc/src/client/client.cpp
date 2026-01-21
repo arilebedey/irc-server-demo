@@ -33,3 +33,9 @@ void Client::clearOutBuffer(size_t bytes) {
 }
 
 void Client::addMessage(std::string message) { _outBuffer += message; }
+
+std::string Client::getIdentity() {
+  if (_nick.empty() || _user.empty())
+    return "Unknown!Unknown@127.0.0.1";
+  return _nick + "!" + _user + "@127.0.0.1";
+}

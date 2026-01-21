@@ -55,10 +55,14 @@ public:
   void join();
   void part();
   void ping();
+  void privmsg();
 
   std::string getName() const { return _name; }
   std::vector<std::string> getArgs() const { return _args; }
   std::string getTrailing() const { return _trailing; }
+
+  std::string craftMessage(Client *sender, std::string target,
+                           std::string message);
   bool isValid() const { return !_name.empty(); }
   void welcomeUser(Client *caller);
 };

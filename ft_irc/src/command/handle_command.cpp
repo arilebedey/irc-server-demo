@@ -124,13 +124,34 @@ void Command::nick() {
     return;
   }
 
-
   if (_server->isNickTaken(_args[0])) {
     _server->sendMessage(_caller, errNicknameInUse(_args[0]));
     return;
   }
   _caller->setNick(_args[0]);
   welcomeUser(_caller);
+}
+
+void Command::privmsg() {
+  if (_args.empty() || _args.size() != 1 || _trailing.empty())
+    return;
+  std::string target = _args[0];
+  if (target.c_str()[0] == '#' || target.c_str()[0] == '&') {
+    // the target is a channel.
+    // TODO : check if the user is able to chat in this channel or not.
+    target = target.erase(0, 1);
+    Channel *channel = _server->getChannel(target);
+    if (!channel)
+      return;
+    _server->broadcastToChannel2(channel, _caller,
+                                 craftMessage(_caller, _args[0], _trailing));
+  } else {
+    // the target of the message is an other user.
+    Client *client = _server->getClientFromNick(target);
+    if (!client)
+      return;
+    _server->sendMessage(client, craftMessage(_caller, _args[0], _trailing));
+  }
 }
 
 void Command::user() {
@@ -140,8 +161,6 @@ void Command::user() {
     return;
   if (_trailing.empty())
     return;
-  std::cout << "Setting user info: " << _args[0] << ", " << _trailing
-            << std::endl;
   _caller->setUser(_args[0]);
   _caller->setReal(_trailing);
   welcomeUser(_caller);

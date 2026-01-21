@@ -15,9 +15,6 @@ void Command::parse(const std::string &req) {
     return;
   }
 
-  // Debug: print raw request
-  std::cerr << "DEBUG parse() raw request: [" << req << "]" << std::endl;
-
   std::string token;
   std::istringstream iss(req);
 
@@ -53,6 +50,8 @@ void Command::handle() {
     part();
   else if (_name == "PING")
     ping();
+  else if (_name == "PRIVMSG")
+    privmsg();
 }
 
 void Command::debug_print() {

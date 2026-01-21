@@ -1,4 +1,5 @@
 #include "../../includes/channel/channel.hpp"
+#include <iostream>
 
 Channel::Channel()
     : _userLimit(0), _inviteOnly(false), _topicCmdRestricted(false) {}
