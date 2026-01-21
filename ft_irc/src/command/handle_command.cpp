@@ -125,7 +125,7 @@ void Command::nick() {
   }
 
 
-  if (true /*_server->isNickTaken(_args[0])*/) {
+  if (_server->isNickTaken(_args[0])) {
     _server->sendMessage(_caller, errNicknameInUse(_args[0]));
     return;
   }
