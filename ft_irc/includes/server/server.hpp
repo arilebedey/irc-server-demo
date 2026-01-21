@@ -1,12 +1,13 @@
 #ifndef SERVER_HPP
 #define SERVER_HPP
 
+#include "../channel/channel.hpp"
 #include "../client/client.hpp"
-#include "../command/command.hpp"
 #include <csignal>
 #include <errno.h>
 #include <fcntl.h>
 #include <iostream>
+#include <map>
 #include <netinet/in.h>
 #include <poll.h>
 #include <signal.h>
@@ -14,6 +15,8 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include <vector>
+
+typedef std::map<std::string, Channel> ChannelMap;
 
 class Server {
 private:
@@ -24,6 +27,7 @@ private:
   std::vector<struct pollfd> _fds;
   static volatile sig_atomic_t _sigReceived;
   std::string _serverName;
+  ChannelMap _channels;
 
 public:
   // server.cpp
@@ -43,6 +47,11 @@ public:
   void cleanup();
   // void closeFds(); not defined
   void clearClients(int fd);
+
+  // Channel-specific
+  bool checkChannelExists(const std::string &name);
+  Channel *getOrCreateChannel(const std::string &name);
+  void deleteChannelIfEmpty(const std::string &name);
 
   // server_handler.cpp
   static void signalHandler(int signum);

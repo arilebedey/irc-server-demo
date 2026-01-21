@@ -1,4 +1,5 @@
 #include "../../includes/client/client.hpp"
+#include "../../includes/command/command.hpp"
 #include "../../includes/server/server.hpp"
 
 void Server::handleWrite(int fd) {
@@ -14,7 +15,7 @@ void Server::handleWrite(int fd) {
 
   ssize_t n = send(fd, msg.c_str(), msg.length(), 0);
   std::cout << "[SENDing to " << fd << "]: " << msg << std::endl;
-  
+
   if (n == -1) {
     disconnectClient(fd);
     return;

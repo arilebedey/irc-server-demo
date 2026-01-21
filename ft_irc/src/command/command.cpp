@@ -46,6 +46,8 @@ void Command::handle() {
     user();
   else if (_name == "NICK")
     nick();
+  else if (_name == "JOIN")
+    join();
 }
 
 void Command::debug_print() {
@@ -60,8 +62,3 @@ void Command::debug_print() {
   std::cout << "Trailings ->" << this->_trailing << "\n";
   std::cout << "==== END ====" << std::endl;
 }
-
-// Test for
-//
-// KICK #channel user1 :
-// PRIVMSG #channel:hello world
