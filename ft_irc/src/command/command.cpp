@@ -36,9 +36,7 @@ void Command::parse(const std::string &req) {
 }
 
 void Command::handle() {
-  std::cout << "Trying to handle the command : \"" + _name + "\"." << std::endl;
   if (_name == "PASS") {
-    std::cout << "Is was in fact a pass request." << std::endl;
     pass();
   } else if (_name == "CAP")
     cap();

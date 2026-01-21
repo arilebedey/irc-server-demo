@@ -38,7 +38,7 @@ std::string Command::errNicknameInUse(std::string nick) {
 std::string Command::infoSuccesConnexion() {
   return ":" + _server->getName() + " 001 " + _caller->getNick() +
          " :Welcome to the Internet Relay Network " + _caller->getNick() + "!" +
-         _caller->getUser() + "@127.0.0.1";
+         _caller->getUser() + "@127.0.0.1\r\n";
 }
 
 // 476 ERR_BADCHANMASK

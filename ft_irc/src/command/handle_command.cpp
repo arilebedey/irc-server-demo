@@ -5,14 +5,8 @@ void Command::cap() {
 
   if (_args[0] == "LS") {
     _server->sendMessage(_caller, "CAP * LS :\r\n");
-    return;
   } else if (_args[0] == "END") {
-    if (_caller->getIsRegistered()) {
-      std::cout << "He is already registered so welcoming him." << std::endl;
-      std::string welcome_msg = infoSuccesConnexion();
-      send(_caller->getFd(), welcome_msg.c_str(), welcome_msg.length(), 0);
-      return;
-    }
+    welcomeUser(_caller);
   } else {
     return;
   }
@@ -91,8 +85,7 @@ void Command::pass() {
     return;
   }
   if (_server->getPassword() != _args[0]) {
-    std::string error = errPasswdMismatch();
-    send(_caller->getFd(), error.c_str(), error.length(), 0);
+    _server->sendMessage(_caller, errPasswdMismatch());
     _server->disconnectClient(_caller->getFd());
     return;
   }
@@ -103,8 +96,9 @@ void Command::pass() {
     https://datatracker.ietf.org/doc/html/rfc1459#section-6.1
 */
 void Command::nick() {
-  if (_caller->getLoggedIn())
+  if (!_caller->getLoggedIn()) {
     return;
+  }
 
   if (_args.empty()) {
     _server->sendMessage(_caller, errNoNicknameGiven());
@@ -122,29 +116,21 @@ void Command::nick() {
     return;
   }
   _caller->setNick(_args[0]);
+  welcomeUser(_caller);
 }
 
-/*
-Behavior of Command::user() described here
--> https://datatracker.ietf.org/doc/html/rfc1459#section-6.1
-
-Exemple : USER guest tolmoon tolsun :Ronnie Reagan
-    - "guest" : username - mandatory
-    - "tolmoon" : hostname - ignored, only used for server to server
-    - "tolsun" : servername - ignored, same reason
-    - "Ronine Reagan" : real identity
-
-*/
 void Command::user() {
   if (!_caller->getLoggedIn() || _caller->getNick().empty())
     return; // There might be a proper err code
-  if (_args.size() != 3)
+  if (_args.size() != 3 && _args.size() != 4)
     return;
   if (_trailing.empty())
     return;
+  std::cout << "Setting user info: " << _args[0] << ", " << _trailing
+            << std::endl;
   _caller->setUser(_args[0]);
   _caller->setReal(_trailing);
-
+  welcomeUser(_caller);
   // TODO: implement proper logic
 }
 
