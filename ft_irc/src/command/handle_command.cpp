@@ -18,7 +18,8 @@ void Command::ping() {
     return;
   }
 
-  std::string response = ":" + _server->getName() + " PONG " + _server->getName() + " :" + _args[0] + "\r\n";
+  std::string response = ":" + _server->getName() + " PONG " +
+                         _server->getName() + " :" + _args[0] + "\r\n";
   _server->sendMessage(_caller, response);
 }
 
@@ -123,7 +124,8 @@ void Command::nick() {
     return;
   }
 
-  if (/*check if the username is using valid format.*/ false) {
+
+  if (true /*_server->isNickTaken(_args[0])*/) {
     _server->sendMessage(_caller, errNicknameInUse(_args[0]));
     return;
   }
@@ -132,7 +134,7 @@ void Command::nick() {
 }
 
 void Command::user() {
-  if (!_caller->getLoggedIn() || _caller->getNick().empty())
+  if (!_caller->getLoggedIn())
     return; // There might be a proper err code
   if (_args.size() != 3 && _args.size() != 4)
     return;

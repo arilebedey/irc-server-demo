@@ -2,9 +2,10 @@
 #include "../../includes/server/server.hpp"
 
 Client *Server::getClientFromFd(int fd) {
-  for (long unsigned int i = 0; i < _clients.size(); i++)
+  for (long unsigned int i = 0; i < _clients.size(); i++) {
     if (_clients[i].getFd() == fd)
       return &(_clients[i]);
+  }
 
   return NULL;
 }
@@ -15,6 +16,15 @@ pollfd *Server::getPollFdFromFd(int fd) {
       return (&_fds[i]);
   }
   return NULL;
+}
+
+bool Server::isNickTaken(std::string searched) {
+  for (long unsigned int i = 0; i < _clients.size(); i++) {
+    if (_clients[i].getNick() == searched)
+      return true;
+  }
+
+  return false;
 }
 
 void Server::clearClients(int fd) {

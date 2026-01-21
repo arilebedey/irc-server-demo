@@ -30,8 +30,8 @@ std::string Command::errErroneusNickname(std::string nick) {
 
 // 433
 std::string Command::errNicknameInUse(std::string nick) {
-  return ":" + _server->getName() + " 433 " + nick +
-         " :Nickname is already in use\r\n";
+  std::string currentNick = _caller->getNick().empty() ? "*" : _caller->getNick();
+  return ":" + _server->getName() + " 433 " + currentNick + " " + nick + " :Nickname is already in use\r\n";
 }
 
 // RPL_WELCODE(001)

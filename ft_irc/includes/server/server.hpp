@@ -45,6 +45,7 @@ public:
   // server_utils.cpp
   Client *getClientFromFd(int fd);
   pollfd *getPollFdFromFd(int fd);
+  bool isNickTaken(std::string searched);
   void cleanup();
   // void closeFds(); not defined
   void clearClients(int fd);
