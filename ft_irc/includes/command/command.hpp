@@ -54,6 +54,7 @@ public:
   void pass();
   void join();
   void part();
+  void ping();
 
   std::string getName() const { return _name; }
   std::vector<std::string> getArgs() const { return _args; }
