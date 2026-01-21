@@ -18,14 +18,10 @@ std::string Command::craftMessage(Client *sender, std::string target,
 }
 
 void Command::welcomeUser(Client *caller) {
-  if (!caller->getIsRegistered()) {
-    std::cout << "User not registered yet" << std::endl;
+  if (!caller->getIsRegistered())
     return;
-  }
-  if (caller->getWelcome()) {
-    std::cout << "User already welcomed" << std::endl;
+  if (caller->getWelcome())
     return;
-  }
   _server->sendMessage(caller, infoSuccesConnexion());
   caller->setWelcome(true);
 }

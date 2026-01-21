@@ -112,24 +112,29 @@ void Command::nick() {
   if (!_caller->getLoggedIn()) {
     return;
   }
-
   if (_args.empty()) {
     _server->sendMessage(_caller, errNoNicknameGiven());
     return;
   }
-
-  // TODO: implement proper logic
   if (/*check if the username is using valid format.*/ false) {
     _server->sendMessage(_caller, errErroneusNickname(_args[0]));
     return;
   }
-
   if (_server->isNickTaken(_args[0])) {
     _server->sendMessage(_caller, errNicknameInUse(_args[0]));
     return;
   }
-  _caller->setNick(_args[0]);
-  welcomeUser(_caller);
+  if (!_caller->getIsRegistered())
+  {
+    _caller->setNick(_args[0]);
+    welcomeUser(_caller);
+  } else
+  { 
+    // TODO : send this message to every channel/privmessage to make them
+    // acknowledge the nick edit.
+    _server->sendMessage(_caller, ":"+ _caller->getNick() + " NICK :" + _args[0]);
+    _caller->setNick(_args[0]);
+  }
 }
 
 void Command::privmsg() {
@@ -143,7 +148,7 @@ void Command::privmsg() {
     Channel *channel = _server->getChannel(target);
     if (!channel)
       return;
-    _server->broadcastToChannel2(channel, _caller,
+    _server->MsgToServer(channel, _caller,
                                  craftMessage(_caller, _args[0], _trailing));
   } else {
     // the target of the message is an other user.

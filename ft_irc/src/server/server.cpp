@@ -159,7 +159,7 @@ void Server::broadcastToChannel(Channel *channel, std::string message) {
   }
 }
 
-void Server::broadcastToChannel2(Channel *channel, Client *sender,
+void Server::MsgToServer(Channel *channel, Client *sender,
                                  std::string message) {
   std::set<int> members = channel->getMembers();
 
