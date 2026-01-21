@@ -41,15 +41,20 @@ void Channel::addInvited(int clientFd) { _invited.insert(clientFd); }
 
 void Channel::removeInvited(int clientFd) { _invited.erase(clientFd); }
 
-bool Channel::canJoin(int clientFd, std::string providedKey) const {
+bool Channel::checkKey(int clientFd, std::string providedKey) const {
   if (!_key.empty() && providedKey != _key)
     return false;
+  return true;
+}
 
+bool Channel::checkInvite(int clientFd) const {
   if (isInviteOnly() && !isInvited(clientFd))
     return false;
+  return true;
+}
 
+bool Channel::checkLimit(int clientFd) const {
   if (_userLimit > 0 && _members.size() >= _userLimit)
     return false;
-
   return true;
 }

@@ -64,14 +64,9 @@ public:
   */
   std::set<int> getMembers() const { return _members; }
 
-  /*
-    canJoin needed for:
-    - Validating JOIN requests against all restrictions in one check:
-      - Invite-only mode
-      - Channel key/password mismatch
-      - User limit reached
-  */
-  bool canJoin(int clientFd, std::string providedKey) const;
+  bool checkKey(int clientFd, std::string providedKey) const;
+  bool checkLimit(int clientFd) const;
+  bool checkInvite(int clientFd) const;
 };
 
 #endif
