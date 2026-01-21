@@ -23,3 +23,33 @@ void Channel::addMember(int clientFd) {
   if (isInvited(clientFd))
     _invited.erase(clientFd);
 }
+
+void Channel::removeMember(int clientFd) {
+  _members.erase(clientFd);
+  if (isOperator(clientFd))
+    _operators.erase(clientFd);
+}
+
+void Channel::addOperator(int clientFd) {
+  if (isMember(clientFd))
+    _operators.insert(clientFd);
+}
+
+void Channel::removeOperator(int clientFd) { _operators.erase(clientFd); }
+
+void Channel::addInvited(int clientFd) { _invited.insert(clientFd); }
+
+void Channel::removeInvited(int clientFd) { _invited.erase(clientFd); }
+
+bool Channel::canJoin(int clientFd, std::string providedKey) const {
+  if (!_key.empty() && providedKey != _key)
+    return false;
+
+  if (isInviteOnly() && !isInvited(clientFd))
+    return false;
+
+  if (_userLimit > 0 && _members.size() >= _userLimit)
+    return false;
+
+  return true;
+}

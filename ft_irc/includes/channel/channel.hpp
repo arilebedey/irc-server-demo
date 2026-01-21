@@ -65,7 +65,7 @@ public:
   std::set<int> getMembers() const { return _members; }
 
   /*
-    getMembers needed for:
+    canJoin needed for:
     - Validating JOIN requests against all restrictions in one check:
       - Invite-only mode
       - Channel key/password mismatch
