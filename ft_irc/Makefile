@@ -10,6 +10,7 @@ SRCS =    client/client.cpp \
 					server/server_utils.cpp \
 					server/server_handler.cpp \
 					server/server.cpp \
+					server/server_channel.cpp \
 					command/command.cpp \
 					command/handle_command.cpp \
 					command/error_command.cpp \
@@ -20,6 +21,7 @@ TEST_SRCS = client/client.cpp \
 						server/server_utils.cpp \
 						server/server_handler.cpp \
 						server/server.cpp \
+						server/server_channel.cpp \
 						command/command.cpp \
 						command/handle_command.cpp \
 						channel/channel.cpp \

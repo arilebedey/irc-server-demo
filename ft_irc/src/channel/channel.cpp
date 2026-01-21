@@ -1,5 +1,8 @@
 #include "../../includes/channel/channel.hpp"
 
+Channel::Channel()
+    : _userLimit(0), _inviteOnly(false), _topicCmdRestricted(false) {}
+
 Channel::Channel(const std::string &name)
     : _name(name), _userLimit(0), _inviteOnly(false),
       _topicCmdRestricted(false) {}
@@ -41,7 +44,7 @@ void Channel::addInvited(int clientFd) { _invited.insert(clientFd); }
 
 void Channel::removeInvited(int clientFd) { _invited.erase(clientFd); }
 
-bool Channel::checkKey(int clientFd, std::string providedKey) const {
+bool Channel::checkKey(std::string providedKey) const {
   if (!_key.empty() && providedKey != _key)
     return false;
   return true;
@@ -53,7 +56,7 @@ bool Channel::checkInvite(int clientFd) const {
   return true;
 }
 
-bool Channel::checkLimit(int clientFd) const {
+bool Channel::checkLimit() const {
   if (_userLimit > 0 && _members.size() >= _userLimit)
     return false;
   return true;

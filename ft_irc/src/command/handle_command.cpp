@@ -24,31 +24,35 @@ void Command::join() {
     return;
   }
 
-  std::string fullChannelName = _args[0];
+  std::string channelName = _args[0];
 
-  if ((fullChannelName[0] != '#' || fullChannelName[0] != '&') &&
-      (fullChannelName.length() < 2 || fullChannelName.length() > 200)) {
-    std::cout << fullChannelName << std::endl;
-    _server->sendMessage(_caller, Command::errBadChannelMask(fullChannelName));
+  if ((channelName[0] != '#' && channelName[0] != '&') ||
+      (channelName.length() < 2 || channelName.length() > 200)) {
+    std::cout << channelName << std::endl;
+    _server->sendMessage(_caller, Command::errBadChannelMask(channelName));
     return;
   }
 
-  for (size_t i = 0; i < fullChannelName.length(); i++) {
-    char c = fullChannelName[i];
+  for (size_t i = 0; i < channelName.length(); i++) {
+    char c = channelName[i];
     if (c == 7 || c == ' ' || c == ',' || (c < 32 && c != 9) || c == 127) {
-      _server->sendMessage(_caller,
-                           Command::errBadChannelMask(fullChannelName));
+      _server->sendMessage(_caller, Command::errBadChannelMask(channelName));
       return;
     }
   }
 
-  std::string channelName = fullChannelName.substr(1);
+  channelName = channelName.substr(1);
 
   std::string key = (_args.size() > 1) ? _args[1] : "";
 
   Channel *channel = _server->getOrCreateChannel(channelName);
 
-  if (!channel->checkKey(_caller->getFd(), key)) {
+  if (channel->isMember(_caller->getFd())) {
+    _server->sendMessage(_caller, errUserOnChannel(channelName));
+    return;
+  }
+
+  if (!channel->checkKey(key)) {
     _server->sendMessage(_caller, errBadChannelKey(channelName));
     return;
   }
@@ -58,7 +62,7 @@ void Command::join() {
     return;
   }
 
-  if (!channel->checkLimit(_caller->getFd())) {
+  if (!channel->checkLimit()) {
     _server->sendMessage(_caller, errChannelIsFull(channelName));
     return;
   }
@@ -72,8 +76,9 @@ void Command::join() {
 
   std::string prefix =
       ":" + _caller->getNick() + "!" + _caller->getUser() + "@127.0.0.1";
-  std::string msg = prefix + "JOIN " + fullChannelName + "\r\n";
-  // TODO: Broadcast `msg` to all
+  std::string msg = prefix + " JOIN #" + channelName + "\r\n";
+  // TODO:
+  // _server->broadcastToChannel(channel, msg);
 }
 
 void Command::pass() {
@@ -141,4 +146,53 @@ void Command::user() {
   _caller->setReal(_trailing);
 
   // TODO: implement proper logic
+}
+
+void Command::part() {
+  if (_args.empty()) {
+    _server->sendMessage(_caller, Command::errNeedMoreParams());
+    return;
+  }
+
+  std::string channelName = _args[0];
+
+  if ((channelName[0] != '#' && channelName[0] != '&') ||
+      (channelName.length() < 2 || channelName.length() > 200)) {
+    std::cout << channelName << std::endl;
+    _server->sendMessage(_caller, Command::errBadChannelMask(channelName));
+    return;
+  }
+
+  for (size_t i = 0; i < channelName.length(); i++) {
+    char c = channelName[i];
+    if (c == 7 || c == ' ' || c == ',' || (c < 32 && c != 9) || c == 127) {
+      _server->sendMessage(_caller, Command::errBadChannelMask(channelName));
+      return;
+    }
+  }
+
+  channelName = channelName.substr(1);
+
+  Channel *channel = _server->getChannel(channelName);
+  if (!channel) {
+    _server->sendMessage(_caller, Command::errNoSuchChannel(channelName));
+    return;
+  }
+  if (!channel->isMember(_caller->getFd())) {
+    _server->sendMessage(_caller, Command::errNotOnChannel(channelName));
+    return;
+  }
+
+  std::string prefix =
+      ":" + _caller->getNick() + "!" + _caller->getUser() + "@127.0.0.1";
+  std::string reason = (_args.size() > 1) ? _args[1] : "";
+  std::string msg = prefix + " PART #" + channelName;
+  if (!reason.empty())
+    msg += " :" + reason + "\r\n";
+  else
+    msg += "\r\n";
+  // TODO:
+  // _server->broadcastToChannel(channel, msg);
+  channel->removeMember(_caller->getFd());
+  _server->deleteChannelIfEmpty(channelName);
 }

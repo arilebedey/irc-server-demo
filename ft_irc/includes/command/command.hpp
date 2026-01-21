@@ -31,12 +31,16 @@ private:
   std::string errNicknameInUse(std::string nick);
   std::string infoSuccesConnexion();
 
+  // Channel-specific errors
   std::string errBadChannelMask(std::string name);
   std::string errChanOpPrivsNeeded(std::string channel);
   std::string errBadChannelKey(std::string channel);
   std::string errInviteOnlyChan(std::string channel);
   std::string errChannelIsFull(std::string channel);
   std::string errKeySet(std::string channel);
+  std::string errNoSuchChannel(std::string channel);
+  std::string errNotOnChannel(std::string channel);
+  std::string errUserOnChannel(std::string channel);
 
 public:
   Command(Server *server, Client *caller, const std::string &req);
@@ -49,6 +53,7 @@ public:
   void nick();
   void pass();
   void join();
+  void part();
 
   std::string getName() const { return _name; }
   std::vector<std::string> getArgs() const { return _args; }

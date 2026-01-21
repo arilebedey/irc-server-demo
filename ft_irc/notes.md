@@ -12,6 +12,9 @@
 - Why signalHandler should return `static void`?
   It's a C++ -> C IPC pattern. It ensures signalHandler doesn't require `this` pointer, which C cannot provide. Allows signalHandler to be a C function pointer.
 
+- Why `_channels.insert(std::make_pair(name, Channel(name)));` instead of `_channels[name] = Channel(name);` could be better?
+  When doing `channels[name]` C++98 check if key exists → NO → Create default Channel() → Insert pair → Assign new value. Thus we need to provide the runtime a default constructor with no param (aka name), more dangerous, but yolo
+
 ### Potential bugs
 
 - No SIGPIPE handling could cause crashes when send() to disconnected client? Test when broadcasting.

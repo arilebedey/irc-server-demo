@@ -48,6 +48,8 @@ void Command::handle() {
     nick();
   else if (_name == "JOIN")
     join();
+  else if (_name == "PART")
+    part();
 }
 
 void Command::debug_print() {

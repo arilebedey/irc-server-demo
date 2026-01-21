@@ -3,6 +3,7 @@
 
 #include "../channel/channel.hpp"
 #include "../client/client.hpp"
+
 #include <csignal>
 #include <errno.h>
 #include <fcntl.h>
@@ -51,6 +52,7 @@ public:
   // Channel-specific
   bool checkChannelExists(const std::string &name);
   Channel *getOrCreateChannel(const std::string &name);
+  Channel *getChannel(const std::string &name);
   void deleteChannelIfEmpty(const std::string &name);
 
   // server_handler.cpp

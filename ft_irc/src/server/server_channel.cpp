@@ -16,6 +16,13 @@ Channel *Server::getOrCreateChannel(const std::string &name) {
   return &(_channels[name]);
 }
 
+Channel *Server::getChannel(const std::string &name) {
+  ChannelMap::iterator it = _channels.find(name);
+  if (it != _channels.end())
+    return &(it->second);
+  return NULL;
+}
+
 void Server::deleteChannelIfEmpty(const std::string &name) {
   ChannelMap::iterator it = _channels.find(name);
   if (it != _channels.end() && it->second.getMemberCount() == 0)

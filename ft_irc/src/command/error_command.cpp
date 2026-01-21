@@ -76,3 +76,21 @@ std::string Command::errChanOpPrivsNeeded(std::string channel) {
   return ":" + _server->getName() + " 482 " + _caller->getNick() + " #" +
          channel + " :You're not channel operator\r\n";
 }
+
+// 403 ERR_NOSUCHCHANNEL
+std::string Command::errNoSuchChannel(std::string channel) {
+  return ":" + _server->getName() + " 403 " + _caller->getNick() + " #" +
+         channel + " :No such channel\r\n";
+}
+
+// 442 ERR_NOTONCHANNEL
+std::string Command::errNotOnChannel(std::string channel) {
+  return ":" + _server->getName() + " 442 " + _caller->getNick() + " #" +
+         channel + " :You're not on that channel\r\n";
+}
+
+// 443 ERR_USERONCHANNEL
+std::string Command::errUserOnChannel(std::string channel) {
+  return ":" + _server->getName() + " 443 " + _caller->getNick() + " #" +
+         channel + " :is already on channel\r\n";
+}

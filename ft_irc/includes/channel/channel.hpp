@@ -20,6 +20,7 @@ private:
   bool _topicCmdRestricted;
 
 public:
+  Channel();
   Channel(const std::string &name);
   ~Channel();
 
@@ -64,8 +65,8 @@ public:
   */
   std::set<int> getMembers() const { return _members; }
 
-  bool checkKey(int clientFd, std::string providedKey) const;
-  bool checkLimit(int clientFd) const;
+  bool checkKey(std::string providedKey) const;
+  bool checkLimit() const;
   bool checkInvite(int clientFd) const;
 };
 
