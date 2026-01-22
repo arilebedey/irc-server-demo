@@ -106,6 +106,10 @@ void Server::receiveFromClient(int fd) {
     std::cout << "Client fd " << fd << ": " << req << std::endl;
     Command cmd(this, client, req);
     // cmd.debug_print();
+
+    if (getClientFromFd(fd) == NULL) {
+      return;
+    }
   }
 }
 
