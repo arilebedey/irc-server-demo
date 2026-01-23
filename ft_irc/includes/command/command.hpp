@@ -56,6 +56,7 @@ public:
   void part();
   void ping();
   void privmsg();
+  void mode();
 
   std::string getName() const { return _name; }
   std::vector<std::string> getArgs() const { return _args; }

@@ -36,9 +36,9 @@ void Command::parse(const std::string &req) {
 }
 
 void Command::handle() {
-  if (_name == "PASS") {
+  if (_name == "PASS")
     pass();
-  } else if (_name == "CAP")
+  else if (_name == "CAP")
     cap();
   else if (_name == "USER")
     user();
@@ -52,6 +52,8 @@ void Command::handle() {
     ping();
   else if (_name == "PRIVMSG")
     privmsg();
+  else if (_name == "MODE")
+    mode();
 }
 
 void Command::debug_print() {

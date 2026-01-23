@@ -27,3 +27,10 @@ If so, add following to handleSignal():
   if (sigaction(SIGPIPE, &sa, NULL) == -1)
     throw(std::runtime_error("sigaction SIGPIPE failed"));
 ```
+
+### TODO Ari
+
+- MODE - full implementation with all flags (i, t, k, o, l)
+- KICK - remove user from channel
+- INVITE - invite user to channel
+- TOPIC - set/view channel topic

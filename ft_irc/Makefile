@@ -15,6 +15,9 @@ SRCS =    client/client.cpp \
 					command/handle_command.cpp \
 					command/error_command.cpp \
 					command/utils_command.cpp \
+					command/handlers/join.cpp \
+					command/handlers/mode.cpp \
+					command/handlers/part.cpp \
 					channel/channel.cpp \
 					main.cpp \
 
@@ -25,6 +28,11 @@ TEST_SRCS = client/client.cpp \
 						server/server_channel.cpp \
 						command/command.cpp \
 						command/handle_command.cpp \
+						command/error_command.cpp \
+						command/utils_command.cpp \
+						command/handlers/join.cpp \
+						command/handlers/mode.cpp \
+						command/handlers/part.cpp \
 						channel/channel.cpp \
 						test_main.cpp \
 
@@ -43,13 +51,13 @@ all: $(NAME)
 $(OBJ_DIR):
 	mkdir -p $(OBJ_DIR)/server
 	mkdir -p $(OBJ_DIR)/client
-	mkdir -p $(OBJ_DIR)/command
+	mkdir -p $(OBJ_DIR)/command/handlers
 	mkdir -p $(OBJ_DIR)/channel
 
 $(TEST_OBJ_DIR):
 	mkdir -p $(TEST_OBJ_DIR)/server
 	mkdir -p $(TEST_OBJ_DIR)/client
-	mkdir -p $(TEST_OBJ_DIR)/command
+	mkdir -p $(OBJ_DIR)/command/handlers
 	mkdir -p $(TEST_OBJ_DIR)/channel
 	mkdir -p $(TEST_OBJ_DIR)/tests
 
