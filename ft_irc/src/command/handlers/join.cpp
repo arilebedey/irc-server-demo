@@ -1,5 +1,4 @@
 #include "../../../includes/command/command.hpp"
-#include <iostream>
 
 void Command::join() {
   if (!_caller->getIsRegistered())

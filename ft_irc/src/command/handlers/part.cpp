@@ -1,5 +1,4 @@
 #include "../../../includes/command/command.hpp"
-#include <iostream>
 
 void Command::part() {
   if (_args.empty()) {

@@ -12,12 +12,17 @@ SRCS =    client/client.cpp \
 					server/server.cpp \
 					server/server_channel.cpp \
 					command/command.cpp \
-					command/handle_command.cpp \
 					command/error_command.cpp \
 					command/utils_command.cpp \
 					command/handlers/join.cpp \
 					command/handlers/mode.cpp \
 					command/handlers/part.cpp \
+					command/handlers/cap.cpp \
+					command/handlers/nick.cpp \
+					command/handlers/pass.cpp \
+					command/handlers/ping.cpp \
+					command/handlers/privmsg.cpp \
+					command/handlers/user.cpp \
 					channel/channel.cpp \
 					main.cpp \
 
