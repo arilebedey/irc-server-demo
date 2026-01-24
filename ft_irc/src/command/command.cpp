@@ -57,7 +57,7 @@ void Command::handle() {
   else if (_name == "INVITE")
     invite();
   else if (_name == "TOPIC")
-    invite();
+    topic();
 }
 
 void Command::debug_print() {

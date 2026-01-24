@@ -16,7 +16,6 @@ void Command::invite() {
   std::string channelName = _args[1];
 
   if (!validateChannelName(channelName)) {
-    std::cout << channelName << std::endl;
     _server->sendMessage(_caller, errBadChannelMask(channelName));
     return;
   }
