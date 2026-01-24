@@ -3,8 +3,10 @@
 #include <iostream>
 
 void Command::mode() {
-  if (!_caller->getIsRegistered())
+  if (!_caller->getIsRegistered()) {
+    _server->sendMessage(_caller, errNotRegistered());
     return;
+  }
 
   if (_args.empty()) {
     _server->sendMessage(_caller, errNeedMoreParams());
@@ -15,7 +17,7 @@ void Command::mode() {
 
   if (!validateChannelName(channelName)) {
     std::cout << channelName << std::endl;
-    _server->sendMessage(_caller, Command::errBadChannelMask(channelName));
+    _server->sendMessage(_caller, errBadChannelMask(channelName));
     return;
   }
 
@@ -23,21 +25,20 @@ void Command::mode() {
 
   Channel *channel = _server->getChannel(channelName);
   if (!channel) {
-    _server->sendMessage(_caller, Command::errNoSuchChannel(channelName));
+    _server->sendMessage(_caller, errNoSuchChannel(channelName));
     return;
   }
   if (!channel->isMember(_caller->getFd())) {
-    _server->sendMessage(_caller, Command::errNotOnChannel(channelName));
+    _server->sendMessage(_caller, errNotOnChannel(channelName));
+    return;
+  }
+  if (!channel->isOperator(_caller->getFd())) {
+    _server->sendMessage(_caller, errChanOpPrivsNeeded(channelName));
     return;
   }
 
   if (_args.size() == 1) {
     _server->sendMessage(_caller, errNeedMoreParams());
-    return;
-  }
-
-  if (!channel->isOperator(_caller->getFd())) {
-    _server->sendMessage(_caller, errChanOpPrivsNeeded(channelName));
     return;
   }
 
@@ -102,7 +103,6 @@ void Command::mode() {
     if (mode == 'l') {
       if (adding) {
         size_t limit = atoi(_args[paramIdx + 2].c_str());
-        std::cout << "LIMIT:" << limit << std::endl;
         channel->setUserLimit(limit);
         paramIdx++;
       } else
@@ -138,8 +138,9 @@ bool Command::validateModeParamCount(std::vector<std::string> _args) {
     }
   }
 
-  if (_args.size() < 2 + requiredParams)
+  if (_args.size() < 2 + requiredParams) {
     return false;
+  }
 
   return true;
 }

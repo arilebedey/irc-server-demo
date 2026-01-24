@@ -109,3 +109,9 @@ std::string Command::errNoSuchNick(std::string nick) {
   return ":" + _server->getName() + " 401 " + _caller->getNick() + " " + nick +
          " :No such nick/channel\r\n";
 }
+
+// 451 ERR_NOTREGISTERED
+std::string Command::errNotRegistered() {
+  return ":" + _server->getName() + " 451 " + _caller->getNick() +
+         " :You have not registered\r\n";
+}

@@ -54,6 +54,10 @@ void Command::handle() {
     privmsg();
   else if (_name == "MODE")
     mode();
+  else if (_name == "INVITE")
+    invite();
+  else if (_name == "TOPIC")
+    invite();
 }
 
 void Command::debug_print() {
