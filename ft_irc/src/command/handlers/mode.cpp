@@ -3,6 +3,7 @@
 #include <iostream>
 
 void Command::mode() {
+  return;
   if (!_caller->getIsRegistered()) {
     _server->sendMessage(_caller, errNotRegistered());
     return;
@@ -15,8 +16,12 @@ void Command::mode() {
 
   std::string channelName = _args[0];
 
+  // suppress irrsi unhandled `MODE nick +i` command
+  if (channelName[0] != '#' || channelName[0] != '&') {
+    return;
+  }
+
   if (!validateChannelName(channelName)) {
-    std::cout << channelName << std::endl;
     _server->sendMessage(_caller, errBadChannelMask(channelName));
     return;
   }
