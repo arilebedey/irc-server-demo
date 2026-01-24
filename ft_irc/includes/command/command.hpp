@@ -21,6 +21,8 @@ private:
 
   void handle();
 
+  bool validateChannelName(std::string channelName);
+
   // Error messages.
   std::string errAlreadyRegistered();
 

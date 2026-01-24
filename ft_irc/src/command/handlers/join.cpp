@@ -11,19 +11,10 @@ void Command::join() {
 
   std::string channelName = _args[0];
 
-  if ((channelName[0] != '#' && channelName[0] != '&') ||
-      (channelName.length() < 2 || channelName.length() > 200)) {
+  if (!validateChannelName(channelName)) {
     std::cout << channelName << std::endl;
     _server->sendMessage(_caller, Command::errBadChannelMask(channelName));
     return;
-  }
-
-  for (size_t i = 0; i < channelName.length(); i++) {
-    char c = channelName[i];
-    if (c == 7 || c == ' ' || c == ',' || (c < 32 && c != 9) || c == 127) {
-      _server->sendMessage(_caller, Command::errBadChannelMask(channelName));
-      return;
-    }
   }
 
   channelName = channelName.substr(1);

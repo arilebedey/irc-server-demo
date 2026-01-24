@@ -25,3 +25,19 @@ void Command::welcomeUser(Client *caller) {
   _server->sendMessage(caller, infoSuccesConnexion());
   caller->setWelcome(true);
 }
+
+bool validateChannelName(std::string channelName) {
+  if ((channelName[0] != '#' && channelName[0] != '&') ||
+      (channelName.length() < 2 || channelName.length() > 200)) {
+    return false;
+  }
+
+  for (size_t i = 0; i < channelName.length(); i++) {
+    char c = channelName[i];
+    if (c == 7 || c == ' ' || c == ',' || (c < 32 && c != 9) || c == 127) {
+      return false;
+    }
+  }
+
+  return true;
+}
