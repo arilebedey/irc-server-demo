@@ -26,7 +26,7 @@ void Command::welcomeUser(Client *caller) {
   caller->setWelcome(true);
 }
 
-bool validateChannelName(std::string channelName) {
+bool Command::validateChannelName(std::string channelName) {
   if ((channelName[0] != '#' && channelName[0] != '&') ||
       (channelName.length() < 2 || channelName.length() > 200)) {
     return false;

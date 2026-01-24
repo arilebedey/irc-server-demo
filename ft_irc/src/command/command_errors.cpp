@@ -96,3 +96,16 @@ std::string Command::errUserOnChannel(std::string channel) {
   return ":" + _server->getName() + " 443 " + _caller->getNick() + " #" +
          channel + " :is already on channel\r\n";
 }
+
+// 441 ERR_USERNOTINCHANNEL
+std::string Command::errUserNotInChannel(std::string nick,
+                                         std::string channel) {
+  return ":" + _server->getName() + " 441 " + _caller->getNick() + " " + nick +
+         " #" + channel + " :They aren't on that channel\r\n";
+}
+
+// 401 ERR_NOSUCHNICK
+std::string Command::errNoSuchNick(std::string nick) {
+  return ":" + _server->getName() + " 401 " + _caller->getNick() + " " + nick +
+         " :No such nick/channel\r\n";
+}

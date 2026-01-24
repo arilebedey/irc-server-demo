@@ -22,6 +22,7 @@ private:
   void handle();
 
   bool validateChannelName(std::string channelName);
+  bool validateModeParamCount(std::vector<std::string> _args);
 
   // Error messages.
   std::string errAlreadyRegistered();
@@ -43,6 +44,8 @@ private:
   std::string errNoSuchChannel(std::string channel);
   std::string errNotOnChannel(std::string channel);
   std::string errUserOnChannel(std::string channel);
+  std::string errUserNotInChannel(std::string nick, std::string channel);
+  std::string errNoSuchNick(std::string nick);
 
 public:
   Command(Server *server, Client *caller, const std::string &req);

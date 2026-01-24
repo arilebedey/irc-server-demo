@@ -12,7 +12,7 @@ SRCS =    client/client.cpp \
 					server/server.cpp \
 					server/server_channel.cpp \
 					command/command.cpp \
-					command/command_error.cpp \
+					command/command_errors.cpp \
 					command/command_utils.cpp \
 					command/handlers/join.cpp \
 					command/handlers/mode.cpp \
@@ -33,7 +33,7 @@ TEST_SRCS = client/client.cpp \
 						server/server_channel.cpp \
 						command/command.cpp \
 						command/handle_command.cpp \
-						command/command_error.cpp \
+						command/command_errors.cpp \
 						command/command_utils.cpp \
 						command/handlers/join.cpp \
 						command/handlers/mode.cpp \
