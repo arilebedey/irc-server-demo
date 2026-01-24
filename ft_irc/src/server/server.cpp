@@ -1,6 +1,5 @@
 #include "../../includes/server/server.hpp"
 #include "../../includes/client/client.hpp"
-
 /*
    TODO :
   - Handle disconnection from users
@@ -63,12 +62,17 @@ void Server::servLoop() {
 
       if (revents & (POLLERR | POLLHUP | POLLNVAL)) {
         disconnectClient(fd);
-      } else if (revents & POLLIN) {
+        continue;
+      }
+      if (revents & POLLIN) {
         handleRead(fd);
-      } else if (revents & POLLOUT) {
+      }
+      if (revents & POLLOUT) {
         handleWrite(fd);
       }
     }
+    // Flush all pending writes immediately after processing reads
+    flushAllWrites();
   }
   Server::cleanup();
 }
@@ -88,6 +92,13 @@ void Server::servSocket() {
                  sizeof(reuse)) == -1) {
     close(_servSocketFd);
     throw(std::runtime_error("failed to set SO_REUSEADDR"));
+  }
+
+  int nodelay = 1;
+  if (setsockopt(_servSocketFd, IPPROTO_TCP, TCP_NODELAY, &nodelay,
+                 sizeof(nodelay)) == -1) {
+    close(_servSocketFd);
+    throw(std::runtime_error("failed to set TCP_NODELAY"));
   }
 
   if (fcntl(_servSocketFd, F_SETFL, O_NONBLOCK) == -1) {
@@ -146,30 +157,44 @@ void Server::sendMessage(Client *client, std::string message) {
 }
 
 void Server::broadcastToChannel(Channel *channel, std::string message) {
-  std::set<int> members = channel->getMembers();
-
-  for (std::set<int>::iterator it = members.begin(); it != members.end();
-       ++it) {
-    int fd = *it;
-    Client *client = getClientFromFd(fd);
-
-    if (client) {
-      sendMessage(client, message);
-    }
-  }
+  sendToSet(channel->getMembers(), message);
 }
 
-void Server::MsgToServer(Channel *channel, Client *sender,
-                                 std::string message) {
+void Server::msgToChannel(Channel *channel, Client *sender,
+                          std::string message) {
   std::set<int> members = channel->getMembers();
+  members.erase(sender->getFd());
+  sendToSet(members, message);
+}
 
-  for (std::set<int>::iterator it = members.begin(); it != members.end();
+void Server::sendToVisible(Client *sender, std::string message) {
+  std::set<int> visible_members;
+
+  for (ChannelMap::iterator it = _channels.begin(); it != _channels.end();
+       ++it) {
+    Channel &channel = it->second;
+    if (channel.isMember(sender->getFd())) {
+      std::set<int> channel_members = channel.getMembers();
+      visible_members.insert(channel_members.begin(), channel_members.end());
+    }
+  }
+
+  std::cout << "After searching, we found " << visible_members.size()
+            << "visible members." << std::endl;
+
+  sendToSet(visible_members, message);
+}
+
+void Server::sendToSet(std::set<int> receivers, std::string message) {
+  for (std::set<int>::iterator it = receivers.begin(); it != receivers.end();
        ++it) {
     int fd = *it;
     Client *client = getClientFromFd(fd);
 
-    if (client && client->getFd() != sender->getFd()) {
+    if (client && client->getFd() == fd) {
       sendMessage(client, message);
+      std::cout << "sending message to the client " << client->getNick()
+                << " fd : " << fd << std::endl;
     }
   }
 }

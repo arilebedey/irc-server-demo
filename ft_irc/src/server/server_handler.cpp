@@ -46,6 +46,13 @@ void Server::acceptClient() {
       throw(std::runtime_error("failed to set O_NONBLOCK"));
     }
 
+    int nodelay = 1;
+    if (setsockopt(clientFd, IPPROTO_TCP, TCP_NODELAY, &nodelay,
+                   sizeof(nodelay)) == -1) {
+      close(clientFd);
+      throw(std::runtime_error("failed to set TCP_NODELAY on client"));
+    }
+
     struct pollfd pfd;
     pfd.fd = clientFd;
     pfd.events = POLLIN;
@@ -55,6 +62,7 @@ void Server::acceptClient() {
     Client newClient;
     newClient.setFd(clientFd);
     _clients.push_back(newClient);
+    _clientFdMap[clientFd] = _clients.size() - 1;
 
     std::cout << "Client fd " << clientFd << " connected" << std::endl;
   }
@@ -118,5 +126,23 @@ void Server::disconnectClient(int fd) {
     close(fd);
     clearClients(fd);
     std::cout << "Client fd " << fd << " disconnected" << std::endl;
+  }
+}
+
+void Server::flushAllWrites() {
+  for (size_t i = 1; i < _fds.size(); i++) {
+    if (_fds[i].events & POLLOUT) {
+      Client *client = getClientFromFd(_fds[i].fd);
+      if (client && !client->getOutBuffer().empty()) {
+        const std::string &msg = client->getOutBuffer();
+        ssize_t n = send(_fds[i].fd, msg.c_str(), msg.length(), 0);
+        if (n > 0) {
+          client->clearOutBuffer(n);
+          if (client->getOutBuffer().empty()) {
+            _fds[i].events &= ~POLLOUT;
+          }
+        }
+      }
+    }
   }
 }

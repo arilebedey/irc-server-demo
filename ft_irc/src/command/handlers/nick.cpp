@@ -20,10 +20,9 @@ void Command::nick() {
     _caller->setNick(_args[0]);
     welcomeUser(_caller);
   } else {
-    // TODO : send this message to every channel/privmessage to make them
-    // acknowledge the nick edit.
-    _server->sendMessage(_caller,
-                         ":" + _caller->getNick() + " NICK :" + _args[0]);
+    std::string prefix = ":" + _caller->getNick() + "!" + _caller->getUser() + "@127.0.0.1";
+    std::string validation_message = prefix + " NICK " + _args[0] + "\r\n";
+    _server->sendToVisible(_caller, validation_message);
     _caller->setNick(_args[0]);
   }
 }

@@ -2,11 +2,10 @@
 #include "../../includes/server/server.hpp"
 
 Client *Server::getClientFromFd(int fd) {
-  for (long unsigned int i = 0; i < _clients.size(); i++) {
-    if (_clients[i].getFd() == fd)
-      return &(_clients[i]);
+  ClientFdMap::iterator it = _clientFdMap.find(fd);
+  if (it != _clientFdMap.end() && it->second < _clients.size()) {
+    return &(_clients[it->second]);
   }
-
   return NULL;
 }
 
@@ -33,6 +32,7 @@ bool Server::isNickTaken(std::string searched) {
 }
 
 void Server::clearClients(int fd) {
+  _clientFdMap.erase(fd);
   for (int i = _fds.size() - 1; i >= 0; i--) {
     if (_fds[i].fd == fd) {
       _fds.erase(_fds.begin() + i);
@@ -42,6 +42,10 @@ void Server::clearClients(int fd) {
   for (int i = _clients.size() - 1; i >= 0; i--) {
     if (_clients[i].getFd() == fd) {
       _clients.erase(_clients.begin() + i);
+      // Rebuild map indices for clients after the erased one
+      for (size_t j = i; j < _clients.size(); j++) {
+        _clientFdMap[_clients[j].getFd()] = j;
+      }
       break;
     }
   }
@@ -61,4 +65,5 @@ void Server::cleanup() {
 
   _fds.clear();
   _clients.clear();
+  _clientFdMap.clear();
 }
