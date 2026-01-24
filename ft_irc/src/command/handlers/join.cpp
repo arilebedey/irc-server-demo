@@ -12,7 +12,6 @@ void Command::join() {
   std::string channelName = _args[0];
 
   if (!validateChannelName(channelName)) {
-    std::cout << channelName << std::endl;
     _server->sendMessage(_caller, Command::errBadChannelMask(channelName));
     return;
   }
