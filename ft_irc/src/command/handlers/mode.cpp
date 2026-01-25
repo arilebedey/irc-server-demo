@@ -1,6 +1,5 @@
 #include "../../../includes/command/command.hpp"
 #include <cstdlib>
-#include <iostream>
 
 void Command::mode() {
   if (!_caller->getIsRegistered()) {

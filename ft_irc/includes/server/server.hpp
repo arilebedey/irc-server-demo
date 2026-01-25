@@ -9,8 +9,8 @@
 #include <fcntl.h>
 #include <iostream>
 #include <map>
-#include <netinet/tcp.h>
 #include <netinet/in.h>
+#include <netinet/tcp.h>
 #include <poll.h>
 #include <signal.h>
 #include <stdlib.h>
@@ -55,13 +55,13 @@ public:
   void clearClients(int fd);
 
   // Channel-specific
+  ChannelMap &getChannels() { return _channels; }
   bool checkChannelExists(const std::string &name);
   Channel *getOrCreateChannel(const std::string &name);
   Channel *getChannel(const std::string &name);
   void deleteChannelIfEmpty(const std::string &name);
   void broadcastToChannel(Channel *channel, std::string message);
-  void msgToChannel(Channel *channel, Client *sender,
-                           std::string message);
+  void msgToChannel(Channel *channel, Client *sender, std::string message);
 
   void sendToVisible(Client *sender, std::string message);
   void sendToSet(std::set<int> receivers, std::string message);
@@ -73,7 +73,8 @@ public:
   void handleWrite(int fd);
   void flushAllWrites();
   void receiveFromClient(int fd);
-  void disconnectClient(int fd);
+  void disconnectClient(int fd,
+                        const std::string &reason = "Connection closed");
 };
 
 #endif

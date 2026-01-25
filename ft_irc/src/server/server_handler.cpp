@@ -121,7 +121,7 @@ void Server::receiveFromClient(int fd) {
   }
 }
 
-void Server::disconnectClient(int fd) {
+void Server::disconnectClient(int fd, const std::string &reason) {
   Client *client = getClientFromFd(fd);
 
   if (client) {
@@ -131,11 +131,6 @@ void Server::disconnectClient(int fd) {
          ++it) {
       Channel &channel = it->second;
       if (channel.isMember(fd)) {
-        std::string prefix =
-            ":" + client->getNick() + "!" + client->getUser() + "@127.0.0.1";
-        std::string message = prefix + " QUIT :Connection closed\r\n";
-        broadcastToChannel(&channel, message);
-
         channel.removeMember(fd);
 
         if (channel.getMemberCount() == 0) {
@@ -147,6 +142,11 @@ void Server::disconnectClient(int fd) {
     for (size_t i = 0; i < channelsToDelete.size(); ++i) {
       _channels.erase(channelsToDelete[i]);
     }
+
+    std::string prefix =
+        ":" + client->getNick() + "!" + client->getUser() + "@127.0.0.1";
+    std::string message = prefix + " QUIT :" + reason + "\r\n";
+    sendToVisible(client, message);
   }
 
   if (fd > 0)

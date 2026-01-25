@@ -66,6 +66,7 @@ public:
   void privmsg();
   void topic();
   void user();
+  void quit();
 
   std::string getName() const { return _name; }
   std::vector<std::string> getArgs() const { return _args; }

@@ -24,6 +24,7 @@ SRCS =    client/client.cpp \
 					command/handlers/pass.cpp \
 					command/handlers/ping.cpp \
 					command/handlers/privmsg.cpp \
+					command/handlers/quit.cpp \
 					command/handlers/topic.cpp \
 					command/handlers/user.cpp \
 					channel/channel.cpp \
@@ -47,6 +48,7 @@ TEST_SRCS = client/client.cpp \
 						command/handlers/pass.cpp \
 						command/handlers/ping.cpp \
 						command/handlers/privmsg.cpp \
+						command/handlers/quit.cpp \
 						command/handlers/topic.cpp \
 						command/handlers/user.cpp \
 						channel/channel.cpp \
