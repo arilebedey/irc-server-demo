@@ -180,7 +180,7 @@ void Server::sendToVisible(Client *sender, std::string message) {
   }
 
   std::cout << "After searching, we found " << visible_members.size()
-            << "visible members." << std::endl;
+            << " visible members." << std::endl;
 
   sendToSet(visible_members, message);
 }
