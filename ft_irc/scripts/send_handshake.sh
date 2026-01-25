@@ -12,5 +12,7 @@ PORT="6667"
   echo -ne "NICK theaux\r\n"
   echo -ne "USER theaux fortnite fortnite:BABOU Teo\r\n"
   echo -ne "CAP END\r\n"
-  sleep 10
+  echo -ne "JOIN neuille\r\n"
+  echo -ne "NICK newman\r\n"
+  sleep 100
 } | nc "$HOST" "$PORT"

@@ -11,7 +11,7 @@ void Command::privmsg() {
     Channel *channel = _server->getChannel(target);
     if (!channel)
       return;
-    _server->MsgToServer(channel, _caller,
+    _server->msgToChannel(channel, _caller,
                          craftMessage(_caller, _args[0], _trailing));
   } else {
     // the target of the message is an other user.

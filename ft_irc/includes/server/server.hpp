@@ -9,6 +9,7 @@
 #include <fcntl.h>
 #include <iostream>
 #include <map>
+#include <netinet/tcp.h>
 #include <netinet/in.h>
 #include <poll.h>
 #include <signal.h>
@@ -18,6 +19,7 @@
 #include <vector>
 
 typedef std::map<std::string, Channel> ChannelMap;
+typedef std::map<int, size_t> ClientFdMap; // fd -> index in _clients
 
 class Server {
 private:
@@ -26,6 +28,7 @@ private:
   std::string _password;
   std::vector<Client> _clients;
   std::vector<struct pollfd> _fds;
+  ClientFdMap _clientFdMap; // O(1) lookup by fd
   static volatile sig_atomic_t _sigReceived;
   std::string _serverName;
   ChannelMap _channels;
@@ -57,14 +60,18 @@ public:
   Channel *getChannel(const std::string &name);
   void deleteChannelIfEmpty(const std::string &name);
   void broadcastToChannel(Channel *channel, std::string message);
-  void MsgToServer(Channel *channel, Client *sender,
+  void msgToChannel(Channel *channel, Client *sender,
                            std::string message);
+
+  void sendToVisible(Client *sender, std::string message);
+  void sendToSet(std::set<int> receivers, std::string message);
 
   // server_handler.cpp
   static void signalHandler(int signum);
   void acceptClient();
   void handleRead(int fd);
   void handleWrite(int fd);
+  void flushAllWrites();
   void receiveFromClient(int fd);
   void disconnectClient(int fd);
 };
