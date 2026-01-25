@@ -17,6 +17,7 @@ SRCS =    client/client.cpp \
 					command/handlers/cap.cpp \
 					command/handlers/invite.cpp \
 					command/handlers/join.cpp \
+					command/handlers/kick.cpp \
 					command/handlers/mode.cpp \
 					command/handlers/nick.cpp \
 					command/handlers/part.cpp \
@@ -39,6 +40,7 @@ TEST_SRCS = client/client.cpp \
 						command/handlers/cap.cpp \
 						command/handlers/invite.cpp \
 						command/handlers/join.cpp \
+						command/handlers/kick.cpp \
 						command/handlers/mode.cpp \
 						command/handlers/nick.cpp \
 						command/handlers/part.cpp \

@@ -40,24 +40,26 @@ void Command::handle() {
     pass();
   else if (_name == "CAP")
     cap();
-  else if (_name == "USER")
-    user();
-  else if (_name == "NICK")
-    nick();
+  else if (_name == "INVITE")
+    invite();
   else if (_name == "JOIN")
     join();
+  else if (_name == "KICK")
+    kick();
+  else if (_name == "MODE")
+    mode();
+  else if (_name == "NICK")
+    nick();
   else if (_name == "PART")
     part();
   else if (_name == "PING")
     ping();
   else if (_name == "PRIVMSG")
     privmsg();
-  else if (_name == "MODE")
-    mode();
-  else if (_name == "INVITE")
-    invite();
   else if (_name == "TOPIC")
     topic();
+  else if (_name == "USER")
+    user();
 }
 
 void Command::debug_print() {

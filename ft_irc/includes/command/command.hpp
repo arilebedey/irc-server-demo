@@ -57,6 +57,7 @@ public:
   void cap();
   void invite();
   void join();
+  void kick();
   void mode();
   void nick();
   void part();
