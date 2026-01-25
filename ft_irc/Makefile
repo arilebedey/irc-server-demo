@@ -99,6 +99,11 @@ $(TEST_OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp | $(TEST_OBJ_DIR)
 $(TEST_OBJ_DIR)/%.o: tests/%.cpp | $(TEST_OBJ_DIR)
 	$(CC) $(CPPFLAGS) -c $< -o $@
 
+# Slow test
+
+slow:
+	python3 tests/slow_test.py
+
 # Helpers
 
 clean:
