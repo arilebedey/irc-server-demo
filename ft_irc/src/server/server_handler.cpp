@@ -122,11 +122,37 @@ void Server::receiveFromClient(int fd) {
 }
 
 void Server::disconnectClient(int fd) {
-  if (fd > 0) {
-    close(fd);
-    clearClients(fd);
-    std::cout << "Client fd " << fd << " disconnected" << std::endl;
+  Client *client = getClientFromFd(fd);
+
+  if (client) {
+    std::vector<std::string> channelsToDelete;
+
+    for (ChannelMap::iterator it = _channels.begin(); it != _channels.end();
+         ++it) {
+      Channel &channel = it->second;
+      if (channel.isMember(fd)) {
+        std::string prefix =
+            ":" + client->getNick() + "!" + client->getUser() + "@127.0.0.1";
+        std::string message = prefix + " QUIT :Connection closed\r\n";
+        broadcastToChannel(&channel, message);
+
+        channel.removeMember(fd);
+
+        if (channel.getMemberCount() == 0) {
+          channelsToDelete.push_back(it->first);
+        }
+      }
+    }
+
+    for (size_t i = 0; i < channelsToDelete.size(); ++i) {
+      _channels.erase(channelsToDelete[i]);
+    }
   }
+
+  if (fd > 0)
+    close(fd);
+  clearClients(fd);
+  std::cout << "Client fd " << fd << " disconnected" << std::endl;
 }
 
 void Server::flushAllWrites() {
