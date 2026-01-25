@@ -2,9 +2,9 @@
 
 IRC server implementation in **C++98** for the 42 School `ft_irc` project.
 
-This project implements a standalone IRC server compatible with a standard IRC client.
-It supports multiple simultaneous clients using non-blocking I/O and a single polling
-mechanism (`poll()` or equivalent).
+This project implements a standalone IRC server compatible with a standard IRC client. The server was thouroughly tested with the `irssi` client that runs fully in the terminal.
+
+Disclaimer: the server does not work on **macOS**. It was developed for **linux** systems.
 
 ## Build
 
@@ -192,3 +192,7 @@ if (ready > 0) {
 # Resources
 
 [Guide to Network Programming](https://beej.us/guide/bgnet/html/split/)
+
+[RFC 1459](https://datatracker.ietf.org/doc/html/rfc1459#section-6.1)
+
+[Ahmed Fatir's Medium article](https://medium.com/@afatir.ahmedfatir/small-irc-server-ft-irc-42-network-7cee848de6f9)
