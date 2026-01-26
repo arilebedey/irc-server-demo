@@ -48,6 +48,11 @@ private:
   std::string errUserOnChannel(std::string channel);
   std::string errUserNotInChannel(std::string nick, std::string channel);
 
+  // Replies
+  std::string rplTopic(Channel *channel);
+  std::string rplNamReply(Channel *channel);
+  std::string rplEndOfNames(std::string channel);
+
 public:
   Command(Server *server, Client *caller, const std::string &req);
   ~Command() {};

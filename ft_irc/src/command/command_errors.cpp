@@ -115,3 +115,37 @@ std::string Command::errNotRegistered() {
   return ":" + _server->getName() + " 451 " + _caller->getNick() +
          " :You have not registered\r\n";
 }
+
+// RPL_TOPIC (332)
+std::string Command::rplTopic(Channel *channel) {
+  return ":" + _server->getName() + " 332 " + _caller->getNick() + " #" +
+         channel->getName() + " :" + channel->getTopic() + "\r\n";
+}
+
+// RPL_NAMREPLY (353)
+std::string Command::rplNamReply(Channel *channel) {
+  std::string names;
+  std::set<int> members = channel->getMembers();
+  for (std::set<int>::iterator it = members.begin(); it != members.end();
+       ++it) {
+    if (it != members.begin())
+      names += " ";
+    Client *client = _server->getClientFromFd(*it);
+    if (!client)
+      continue;
+
+    if (channel->isOperator(client->getFd()))
+      names += "@";
+
+    names += client->getNick();
+  }
+
+  return ":" + _server->getName() + " 353 " + _caller->getNick() + " = #" +
+         channel->getName() + " :" + names + "\r\n";
+}
+
+// RPL_ENDOFNAMES (366)
+std::string Command::rplEndOfNames(std::string channel) {
+  return ":" + _server->getName() + " 366 " + _caller->getNick() + " #" +
+         channel + " :End of NAMES list\r\n";
+}

@@ -41,16 +41,19 @@ void Command::join() {
     _server->sendMessage(_caller, errChannelIsFull(channelName));
     return;
   }
+  channel->addMember(_caller->getFd());
 
-  if (channel->getMemberCount() == 0) {
-    channel->addMember(_caller->getFd());
+  if (channel->getMemberCount() == 1)
     channel->addOperator(_caller->getFd());
-  } else {
-    channel->addMember(_caller->getFd());
-  }
 
   std::string prefix =
       ":" + _caller->getNick() + "!" + _caller->getUser() + "@127.0.0.1";
   std::string message = prefix + " JOIN #" + channelName + "\r\n";
   _server->broadcastToChannel(channel, message);
+
+  if (!channel->getTopic().empty())
+    _server->sendMessage(_caller, rplTopic(channel));
+    
+  _server->sendMessage(_caller, rplNamReply(channel));
+  _server->sendMessage(_caller, rplEndOfNames(channelName));
 }
