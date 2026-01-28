@@ -125,6 +125,11 @@ void Server::disconnectClient(int fd, const std::string &reason) {
   Client *client = getClientFromFd(fd);
 
   if (client) {
+    std::string prefix =
+        ":" + client->getNick() + "!" + client->getUser() + "@127.0.0.1";
+    std::string message = prefix + " QUIT :" + reason + "\r\n";
+    sendToVisible(client, message);
+
     std::vector<std::string> channelsToDelete;
 
     for (ChannelMap::iterator it = _channels.begin(); it != _channels.end();
@@ -142,11 +147,6 @@ void Server::disconnectClient(int fd, const std::string &reason) {
     for (size_t i = 0; i < channelsToDelete.size(); ++i) {
       _channels.erase(channelsToDelete[i]);
     }
-
-    std::string prefix =
-        ":" + client->getNick() + "!" + client->getUser() + "@127.0.0.1";
-    std::string message = prefix + " QUIT :" + reason + "\r\n";
-    sendToVisible(client, message);
   }
 
   if (fd > 0)
