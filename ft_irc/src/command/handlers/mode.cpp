@@ -35,6 +35,9 @@ void Command::mode() {
     _server->sendMessage(_caller, errNotOnChannel(channelName));
     return;
   }
+  if (_args.size() == 1) {
+    return; // /MODE #c queries
+  }
   if (!channel->isOperator(_caller->getFd())) {
     _server->sendMessage(_caller, errChanOpPrivsNeeded(channelName));
     return;
@@ -66,16 +69,16 @@ void Command::mode() {
 
     if (mode == '+')
       adding = true;
-    if (mode == '-')
+    else if (mode == '-')
       adding = false;
 
-    if (mode == 'i')
+    else if (mode == 'i')
       channel->setInviteOnly(adding);
 
-    if (mode == 't')
+    else if (mode == 't')
       channel->setTopicCmdRestricted(adding);
 
-    if (mode == 'k') {
+    else if (mode == 'k') {
       if (adding) {
         channel->setKey(_args[paramIdx + 2]);
         paramIdx++;
@@ -83,7 +86,7 @@ void Command::mode() {
         channel->setKey("");
     }
 
-    if (mode == 'o') {
+    else if (mode == 'o') {
       Client *target = _server->getClientFromNick(_args[paramIdx + 2]);
       if (!target) {
         _server->sendMessage(_caller, errNoSuchNick(_args[paramIdx + 2]));
@@ -103,7 +106,7 @@ void Command::mode() {
       paramIdx++;
     }
 
-    if (mode == 'l') {
+    else if (mode == 'l') {
       if (adding) {
         size_t limit = atoi(_args[paramIdx + 2].c_str());
         channel->setUserLimit(limit);
@@ -111,6 +114,9 @@ void Command::mode() {
       } else
         channel->setUserLimit(0);
     }
+
+    else
+      continue;
   }
 
   std::string prefix =

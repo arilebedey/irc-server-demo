@@ -14,5 +14,6 @@ PORT="6667"
   echo -ne "CAP END\r\n"
   echo -ne "JOIN neuille\r\n"
   echo -ne "NICK newman\r\n"
+  echo -ne "JOIN #channel\r\n"
   sleep 100
 } | nc "$HOST" "$PORT"
